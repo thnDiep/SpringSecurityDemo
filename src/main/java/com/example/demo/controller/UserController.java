@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.configuration.TenantContext;
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
 import com.example.demo.dto.response.ApiResponse;
@@ -12,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,8 +33,6 @@ public class UserController {
 
     @GetMapping
     public ApiResponse<List<UserResponse>> getUsers(){
-        log.info("Current Tenant ID: {}", TenantContext.getCurrentTenant());
-
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Username {}", authentication.getName());
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));

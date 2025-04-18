@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -43,9 +44,8 @@ public class UserService {
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Role role = roleRepository.findById(PredefineRole.USER_ROLE).orElseThrow(() -> new AppException(ErrorCode.INVALID_KEY));
-        HashSet<Role> roles = new HashSet<Role>();
-        roles.add(role);
+        HashSet<Role> roles = new HashSet<>();
+        roleRepository.findById(PredefineRole.USER_ROLE).ifPresent(roles::add);
 
         user.setRoles(roles);
 

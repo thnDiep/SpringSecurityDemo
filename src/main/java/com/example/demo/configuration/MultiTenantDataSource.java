@@ -7,7 +7,7 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 public class MultiTenantDataSource extends AbstractRoutingDataSource {
     @Override
     protected Object determineCurrentLookupKey() {
-        log.info(TenantContext.getCurrentTenant());
+        log.info("Current tenant: {}", TenantContext.getCurrentTenant());
         return TenantContext.getCurrentTenant();
     }
 }

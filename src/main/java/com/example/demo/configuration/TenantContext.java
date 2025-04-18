@@ -5,8 +5,7 @@ public class TenantContext {
     public static final String DEFAULT_TENANT = "default";
 
     public static String getCurrentTenant() {
-        String tenant = CURRENT_TENANT.get();
-        return tenant != null ? tenant : DEFAULT_TENANT;
+        return CURRENT_TENANT.get();
     }
 
     public static void setCurrentTenant(String tenant) {
