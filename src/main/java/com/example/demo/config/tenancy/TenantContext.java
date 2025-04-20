@@ -1,4 +1,4 @@
-package com.example.demo.configuration;
+package com.example.demo.config.tenancy;
 
 public class TenantContext {
     private static final ThreadLocal<String> CURRENT_TENANT = new ThreadLocal<>();

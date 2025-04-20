@@ -1,4 +1,4 @@
-package com.example.demo.configuration;
+package com.example.demo.config;
 
 import com.example.demo.service.UserSeedService;
 import lombok.AccessLevel;

@@ -1,4 +1,4 @@
-package com.example.demo.configuration;
+package com.example.demo.config;
 
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.exception.ErrorCode;

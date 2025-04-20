@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.configuration.TenantContext;
+import com.example.demo.config.tenancy.TenantContext;
 import com.example.demo.constant.PredefineRole;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
