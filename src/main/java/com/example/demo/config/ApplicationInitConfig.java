@@ -1,16 +1,26 @@
 package com.example.demo.config;
 
-import com.example.demo.service.UserSeedService;
+import com.example.demo.config.tenancy.TenantContext;
+import com.example.demo.constant.PredefineRole;
+import com.example.demo.entity.Role;
+import com.example.demo.entity.User;
+import com.example.demo.repository.RoleRepository;
+import com.example.demo.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.HashSet;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -19,14 +29,43 @@ import java.util.List;
 @Configuration
 public class ApplicationInitConfig {
     PasswordEncoder passwordEncoder;
-    @Value("#{'${tenants}'.split(',')}")
-    private List<String> tenantList;
 
     @Bean
-    ApplicationRunner applicationRunner(UserSeedService seedService) {
+    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository, EntityManagerFactory emf) {
         return args -> {
-            for (String tenantId : tenantList) {
-                seedService.createAdminIfNotExists(tenantId);
+//            List<String> tenantSchemas = List.of("tenant1_db", "tenant2_db"); // danh sách tenant
+//            SessionFactoryImplementor sessionFactory = emf.unwrap(SessionFactoryImplementor.class);
+//
+//            for (String tenant : tenantSchemas) {
+//                try {
+//                    TenantContext.setCurrentTenant(tenant);
+//                    try (Session session = sessionFactory.openSession()) {
+//                        // Force some operation to trigger Hibernate schema validation/update
+//                        session.beginTransaction();
+//                        session.createNativeQuery("SELECT 1").getSingleResult(); // dummy query
+//                        session.getTransaction().commit();
+//                    }
+//                } finally {
+//                    TenantContext.clear();
+//                }
+//            }
+
+            if(userRepository.findByUsername("admin").isEmpty()) {
+                Role adminRole = roleRepository.save(Role.builder()
+                        .name(PredefineRole.ADMIN_ROLE)
+                        .description("Admin role")
+                        .build());
+
+                var roles = new HashSet<Role>();
+                roles.add(adminRole);
+
+                userRepository.save(User.builder()
+                        .username("admin")
+                        .password(passwordEncoder.encode("admin"))
+                        .roles(roles)
+                        .build());
+
+                log.warn("admin user has been created with default password: admin");
             }
         };
     }

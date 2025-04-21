@@ -13,7 +13,8 @@ public class TenantInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String tenantID = request.getHeader("X-Tenant-Id");
-        TenantContext.setCurrentTenant(tenantID != null ? tenantID : TenantContext.DEFAULT_TENANT);
+        tenantID = tenantID != null ? tenantID : TenantContext.DEFAULT_TENANT;
+        TenantContext.setCurrentTenant(tenantID);
 
         log.info("The intercepted tenant: {}", tenantID);
         return true;

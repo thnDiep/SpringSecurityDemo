@@ -25,8 +25,6 @@ public class UserSeedService {
     @Transactional
     public void createAdminIfNotExists(String tenantId) {
         TenantContext.setCurrentTenant(tenantId);
-        log.info("TenentList {}", tenantId);
-
         if (userRepository.findByUsername("admin").isEmpty()) {
             Role adminRole = roleRepository.save(Role.builder()
                     .name(PredefineRole.ADMIN_ROLE)
@@ -46,7 +44,6 @@ public class UserSeedService {
 
             log.warn("Admin created for tenant '{}'", tenantId);
         }
-
         TenantContext.clear();
     }
 }

@@ -1,26 +1,16 @@
 spring:
   datasource:
-    default:
-      url: jdbc:mysql://localhost:3306/identity_service
-      username: root
-      password: 12345678x@X
-    tenant1:
-        url: jdbc:mysql://localhost:3306/tenant1_db
-        username: root
-        password: 12345678x@X
-    tenant2:
-        url: jdbc:mysql://localhost:3306/tenant2_db
-        username: root
-        password: 12345678x@X
+    jdbcUrl: jdbc:mysql://localhost:3306/identity_service
+    username: root
+    password: 12345678x@X
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        multiTenancy: DATABASE
+hibernate:
+  hbm2ddl:
+    auto: update
 jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
   valid-duration: 3600 # in seconds
   refreshable-duration: 7200 # in seconds
-tenants: default, tenant1, tenant2
-

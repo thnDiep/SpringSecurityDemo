@@ -2,7 +2,7 @@ package com.example.demo.config.tenancy;
 
 public class TenantContext {
     private static final ThreadLocal<String> CURRENT_TENANT = new ThreadLocal<>();
-    public static final String DEFAULT_TENANT = "default";
+    public static final String DEFAULT_TENANT = "identity_service";
 
     public static String getCurrentTenant() {
         return CURRENT_TENANT.get();
