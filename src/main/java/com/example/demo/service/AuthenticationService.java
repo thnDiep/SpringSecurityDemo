@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.config.tenancy.TenantContext;
 import com.example.demo.dto.request.AuthenticationRequest;
 import com.example.demo.dto.request.IntrospectRequest;
 import com.example.demo.dto.request.LogoutRequest;
@@ -30,10 +31,7 @@ import org.springframework.util.CollectionUtils;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.Date;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -71,12 +69,12 @@ public class AuthenticationService {
                 .build();
     }
 
-    public IntrospectResponse introspect(IntrospectRequest request) throws ParseException, JOSEException {
+    public IntrospectResponse introspect(IntrospectRequest request, boolean isCheckTenancy) throws ParseException, JOSEException {
         String token = request.getToken();
         boolean isValid = true;
 
         try {
-            verifyToken(token, false);
+            verifyToken(token, false, isCheckTenancy);
         } catch (AppException e) {
             isValid = false;
         }
@@ -88,7 +86,7 @@ public class AuthenticationService {
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
         try {
-            SignedJWT signedJWT = verifyToken(request.getToken(),true);
+            SignedJWT signedJWT = verifyToken(request.getToken(),true, false);
 
             String jti = signedJWT.getJWTClaimsSet().getJWTID();
             Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
@@ -106,7 +104,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse refreshToken(RefreshRequest request)
             throws ParseException, JOSEException {
-        SignedJWT signedJWT = verifyToken(request.getToken(), true);
+        SignedJWT signedJWT = verifyToken(request.getToken(), true, false);
 
         // disable the old token
         String jti = signedJWT.getJWTClaimsSet().getJWTID();
@@ -122,7 +120,6 @@ public class AuthenticationService {
         // generate the new token
         var username = signedJWT.getJWTClaimsSet().getSubject();
         User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
-
         String token = generateToken(user);
         return AuthenticationResponse.builder()
                 .authenticated(true)
@@ -134,6 +131,7 @@ public class AuthenticationService {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getUsername())
+                .audience(TenantContext.getCurrentTenant())
                 .issuer("demo.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()))
@@ -153,7 +151,7 @@ public class AuthenticationService {
         }
     }
 
-    private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
+    private SignedJWT verifyToken(String token, boolean isRefresh, boolean isCheckTenancy) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
@@ -163,6 +161,11 @@ public class AuthenticationService {
                 : signedJWT.getJWTClaimsSet().getExpirationTime();
 
         var verified = signedJWT.verify(verifier);
+
+        if(isCheckTenancy && !TenantContext.getCurrentTenant().equals(signedJWT.getJWTClaimsSet().getAudience().get(0))) {
+            log.warn("new error {} - {}", TenantContext.getCurrentTenant(), signedJWT.getJWTClaimsSet().getAudience().get(0));
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
 
         if (!(verified && expiryTime.after(new Date())))
             throw new AppException(ErrorCode.UNAUTHENTICATED);

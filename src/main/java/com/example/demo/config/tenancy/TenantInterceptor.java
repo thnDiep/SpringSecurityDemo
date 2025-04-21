@@ -1,22 +1,35 @@
 package com.example.demo.config.tenancy;
 
+import com.example.demo.config.SecurityConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Arrays;
+
 @Slf4j
 @Component
 public class TenantInterceptor implements HandlerInterceptor {
+    private final String[] PUBLIC_ENDPOINTS = {"/users", "/auth/token", "/auth/introspect"};
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String tenantID = request.getHeader("X-Tenant-Id");
-        tenantID = tenantID != null ? tenantID : TenantContext.DEFAULT_TENANT;
-        TenantContext.setCurrentTenant(tenantID);
+        String path = request.getRequestURI();
 
-        log.info("The intercepted tenant: {}", tenantID);
+        if (Arrays.stream(PUBLIC_ENDPOINTS).anyMatch(path::startsWith) && request.getMethod().equalsIgnoreCase("POST")) {
+            log.info("Path: {}", path);
+            String tenantID = request.getHeader("X-Tenant-Id");
+            tenantID = tenantID != null ? tenantID : TenantContext.DEFAULT_TENANT;
+            TenantContext.setCurrentTenant(tenantID);
+        }
         return true;
     }
 

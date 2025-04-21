@@ -33,23 +33,6 @@ public class ApplicationInitConfig {
     @Bean
     ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository, EntityManagerFactory emf) {
         return args -> {
-//            List<String> tenantSchemas = List.of("tenant1_db", "tenant2_db"); // danh sách tenant
-//            SessionFactoryImplementor sessionFactory = emf.unwrap(SessionFactoryImplementor.class);
-//
-//            for (String tenant : tenantSchemas) {
-//                try {
-//                    TenantContext.setCurrentTenant(tenant);
-//                    try (Session session = sessionFactory.openSession()) {
-//                        // Force some operation to trigger Hibernate schema validation/update
-//                        session.beginTransaction();
-//                        session.createNativeQuery("SELECT 1").getSingleResult(); // dummy query
-//                        session.getTransaction().commit();
-//                    }
-//                } finally {
-//                    TenantContext.clear();
-//                }
-//            }
-
             if(userRepository.findByUsername("admin").isEmpty()) {
                 Role adminRole = roleRepository.save(Role.builder()
                         .name(PredefineRole.ADMIN_ROLE)
