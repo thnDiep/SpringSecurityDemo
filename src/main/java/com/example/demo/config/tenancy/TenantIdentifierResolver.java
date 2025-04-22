@@ -4,9 +4,9 @@ import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver {
+public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver<String> {
     @Override
-    public Object resolveCurrentTenantIdentifier() {
+    public String resolveCurrentTenantIdentifier() {
         String tenantId = TenantContext.getCurrentTenant();
 
         return (tenantId != null) ? tenantId : TenantContext.DEFAULT_TENANT;

@@ -16,6 +16,7 @@ public enum ErrorCode {
     UNAUTHORIZED(1007, "Unauthorized", HttpStatus.FORBIDDEN),
     INVALID_DOB(1008, "Your age must be at leas {min}", HttpStatus.BAD_REQUEST),
     INVALID_TENANT_ID(1009, "Unauthenticated", HttpStatus.UNAUTHORIZED),
+    FAILED_BATCH(1010, "Error batch processing", HttpStatus.INTERNAL_SERVER_ERROR),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

@@ -20,24 +20,22 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class TenantConnectionProviderImpl implements MultiTenantConnectionProvider {
+public class TenantConnectionProviderImpl implements MultiTenantConnectionProvider<String> {
     private final DataSource defaultDataSource;
 
     @Override
-    public Connection getConnection(Object tenantId) throws SQLException {
+    public Connection getConnection(String tenantId) throws SQLException {
         final Connection connection = getAnyConnection();
-
-        String tenantIdentifier = String.valueOf(tenantId);
         try {
-            connection.createStatement().execute("USE " + tenantIdentifier);
+            connection.createStatement().execute("USE " + tenantId);
         } catch (SQLException e) {
-            throw new HibernateException("Could not switch to schema: " + tenantIdentifier, e);
+            throw new HibernateException("Could not switch to schema: " + tenantId, e);
         }
         return connection;
     }
 
     @Override
-    public void releaseConnection(Object tenantId, Connection connection) throws SQLException {
+    public void releaseConnection(String tenantId, Connection connection) throws SQLException {
         connection.close();
     }
 

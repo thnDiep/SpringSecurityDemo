@@ -7,6 +7,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+    file-path:
+      output: "outputs/users.csv"
 hibernate:
   hbm2ddl:
     auto: update
@@ -14,3 +21,4 @@ jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
   valid-duration: 3600 # in seconds
   refreshable-duration: 7200 # in seconds
+

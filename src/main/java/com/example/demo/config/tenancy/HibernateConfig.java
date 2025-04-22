@@ -22,8 +22,8 @@ import java.util.Map;
 public class HibernateConfig {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            MultiTenantConnectionProvider tenantConnectionProviderImpl,
-            CurrentTenantIdentifierResolver tenantIdentifierResolver) {
+            MultiTenantConnectionProvider<String> tenantConnectionProviderImpl,
+            CurrentTenantIdentifierResolver<String> tenantIdentifierResolver) {
 
         Map<String, Object> hibernateProps = new HashMap<>();
         hibernateProps.put(Environment.MULTI_TENANT_CONNECTION_PROVIDER, tenantConnectionProviderImpl);

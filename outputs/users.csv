@@ -1,0 +1,3 @@
+id, username, firstName, lastName, dob, roles
+1, admin, Admin, Admin, 2002-05-07, ADMIN
+2, t2_user, Ngọc, Diệp, 2002-05-07, USER
