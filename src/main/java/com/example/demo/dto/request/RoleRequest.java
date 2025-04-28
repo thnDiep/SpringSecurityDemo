@@ -1,6 +1,5 @@
 package com.example.demo.dto.request;
 
-import com.example.demo.entity.Permission;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

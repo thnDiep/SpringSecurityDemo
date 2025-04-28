@@ -35,7 +35,7 @@ public class ApplicationInitConfig {
     PasswordEncoder passwordEncoder;
     UserRepository userRepository;
     RoleRepository roleRepository;
-    List<String> tenantList = List.of("identity_service", "tenant1_db", "tenant2_db");
+    List<String> tenantList = List.of("jwt_schema", "digest_schema");
 
     @Bean
     ApplicationRunner applicationRunner() {

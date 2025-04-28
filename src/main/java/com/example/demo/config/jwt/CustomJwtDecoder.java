@@ -1,4 +1,4 @@
-package com.example.demo.config;
+package com.example.demo.config.jwt;
 
 import com.example.demo.config.tenancy.TenantContext;
 import com.example.demo.dto.request.IntrospectRequest;
