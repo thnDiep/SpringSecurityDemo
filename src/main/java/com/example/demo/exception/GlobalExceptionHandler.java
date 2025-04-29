@@ -1,8 +1,12 @@
 package com.example.demo.exception;
 
 import com.example.demo.dto.response.ApiResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,6 +19,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     private static final String MIN_ATTRIBUTE = "min";
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception) {
@@ -76,5 +81,13 @@ public class GlobalExceptionHandler {
         String minValue = String.valueOf(attributes.get(MIN_ATTRIBUTE));
 
         return message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
+    }
+
+    public static String apiResponseToString(ErrorCode errorCode) throws JsonProcessingException {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build();
+        return objectMapper.writeValueAsString(apiResponse);
     }
 }

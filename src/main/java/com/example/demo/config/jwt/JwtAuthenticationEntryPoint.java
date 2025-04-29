@@ -1,8 +1,7 @@
 package com.example.demo.config.jwt;
 
-import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.exception.ErrorCode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.demo.exception.GlobalExceptionHandler;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,15 +19,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         response.setStatus(errorCode.getStatusCode().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-        ApiResponse<?> apiResponse = ApiResponse.builder()
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .build();
-
-//        Vì write yêu cầu String mà ApiResponse là một object nên cần dùng ObjectMapper để convert object về json
-        ObjectMapper objectMapper = new ObjectMapper();
-        response.getWriter().write(objectMapper.writeValueAsString(apiResponse)); // set body cho response
-        response.flushBuffer(); // commit response -> force việc gửi request về cho client
+        response.getWriter().write(GlobalExceptionHandler.apiResponseToString(errorCode)); // set body cho response
     }
 }

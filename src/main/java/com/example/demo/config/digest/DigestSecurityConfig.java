@@ -1,5 +1,6 @@
 package com.example.demo.config.digest;
 
+import com.example.demo.filter.TenantFilter;
 import com.example.demo.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
@@ -32,6 +34,7 @@ public class DigestSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(e -> e.authenticationEntryPoint(digestAuthenticationEntryPoint()))
+                .addFilterBefore(new TenantFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(digestAuthenticationFilter(), BasicAuthenticationFilter.class);
         return httpSecurity.build();
     }

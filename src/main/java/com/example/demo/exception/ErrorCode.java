@@ -15,7 +15,7 @@ public enum ErrorCode {
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "Unauthorized", HttpStatus.FORBIDDEN),
     INVALID_DOB(1008, "Your age must be at leas {min}", HttpStatus.BAD_REQUEST),
-    INVALID_TENANT_ID(1009, "Unauthenticated", HttpStatus.UNAUTHORIZED),
+    INVALID_TENANT_ID(1009, "Tenant ID is required for authentication", HttpStatus.UNAUTHORIZED),
     FAILED_BATCH(1010, "Error batch processing", HttpStatus.INTERNAL_SERVER_ERROR),
     SQL_ERROR(1011, "Failed to execute SQL script statement", HttpStatus.INTERNAL_SERVER_ERROR),
     ;

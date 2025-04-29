@@ -12,7 +12,7 @@ public class TenantContext {
     }
 
     public static void setCurrentTenant(String tenant) {
-        log.info("The current tenant: {}", tenant);
+        log.info("Tenant set to: {}", TenantContext.getCurrentTenant());
         CURRENT_TENANT.set(tenant != null ? tenant : DEFAULT_TENANT);
     }
 

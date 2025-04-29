@@ -35,7 +35,7 @@ public class CustomJwtDecoder implements JwtDecoder {
         Jwt jwt = NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS512).build().decode(token);
 
         List<String> audience = jwt.getAudience();
-        String tenantId = !audience.isEmpty() ? audience.get(0) : null ;
+        String tenantId = !audience.isEmpty() ? audience.get(0) : null;
         if (tenantId != null) {
             TenantContext.setCurrentTenant(tenantId);
         }
