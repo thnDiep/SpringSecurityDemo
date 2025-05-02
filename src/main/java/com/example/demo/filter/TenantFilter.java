@@ -25,27 +25,13 @@ public class TenantFilter extends OncePerRequestFilter {
 
         String tenantId = request.getHeader("X-Tenant-Id");
 
-        try {
-            if (tenantId == null) {
-                sendErrorResponse(response, ErrorCode.INVALID_TENANT_ID);
-                return;
-            }
-
-            if (request.getRequestURI().startsWith("/auth") && !tenantId.equals("jwt_schema")) {
-                sendErrorResponse(response, ErrorCode.UNAUTHENTICATED);
-                return;
-            }
-
+        if (tenantId != null) {
             TenantContext.setCurrentTenant(tenantId);
+        }
+        try {
             filterChain.doFilter(request, response);
         } finally {
             TenantContext.clear();
         }
-    }
-
-    private void sendErrorResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
-        response.setStatus(errorCode.getStatusCode().value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write(GlobalExceptionHandler.apiResponseToString(errorCode));
     }
 }

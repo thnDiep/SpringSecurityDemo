@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.constant.PredefineRole;
+import com.example.demo.constant.PredefinedRole;
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.entity.Role;
@@ -9,19 +9,14 @@ import com.example.demo.exception.AppException;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 
@@ -81,7 +76,7 @@ public class UserServiceTest {
                 .build();
 
         role = Role.builder()
-                .name(PredefineRole.USER_ROLE)
+                .name(PredefinedRole.USER_ROLE)
                 .description("User role")
                 .build();
     }

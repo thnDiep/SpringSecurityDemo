@@ -1,4 +1,4 @@
-package com.example.demo.config.jwt;
+package com.example.demo.config.security;
 
 import com.example.demo.exception.ErrorCode;
 import com.example.demo.exception.GlobalExceptionHandler;
@@ -11,7 +11,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 
 import java.io.IOException;
 
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class JwtEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {

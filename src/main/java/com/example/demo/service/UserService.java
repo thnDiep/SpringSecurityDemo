@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.constant.PredefineRole;
+import com.example.demo.constant.PredefinedRole;
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
 import com.example.demo.dto.response.UserResponse;
@@ -43,7 +43,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         HashSet<Role> roles = new HashSet<>();
-        roleRepository.findById(PredefineRole.USER_ROLE).ifPresent(roles::add);
+        roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
 
         user.setRoles(roles);
 

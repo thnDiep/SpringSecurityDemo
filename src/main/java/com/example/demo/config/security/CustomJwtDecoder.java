@@ -1,4 +1,4 @@
-package com.example.demo.config.jwt;
+package com.example.demo.config.security;
 
 import com.example.demo.config.tenancy.TenantContext;
 import com.example.demo.dto.request.IntrospectRequest;
@@ -34,6 +34,7 @@ public class CustomJwtDecoder implements JwtDecoder {
         SecretKey secretKey = new SecretKeySpec(signerKey.getBytes(), "HS512");
         Jwt jwt = NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS512).build().decode(token);
 
+        // Need to check later
         List<String> audience = jwt.getAudience();
         String tenantId = !audience.isEmpty() ? audience.get(0) : null;
         if (tenantId != null) {

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    jdbcUrl: jdbc:mysql://localhost:3306/jwt_schema
+    jdbcUrl: jdbc:mysql://localhost:3306/default_schema
     username: root
     password: 12345678x@X
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -21,3 +21,4 @@ jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
   valid-duration: 3600 # in seconds
   refreshable-duration: 7200 # in seconds
+

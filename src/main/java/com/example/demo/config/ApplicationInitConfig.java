@@ -1,7 +1,8 @@
 package com.example.demo.config;
 
 import com.example.demo.config.tenancy.TenantContext;
-import com.example.demo.constant.PredefineRole;
+import com.example.demo.constant.PredefinedRole;
+import com.example.demo.constant.TenantId;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.exception.AppException;
@@ -35,7 +36,7 @@ public class ApplicationInitConfig {
     PasswordEncoder passwordEncoder;
     UserRepository userRepository;
     RoleRepository roleRepository;
-    List<String> tenantList = List.of("jwt_schema", "digest_schema");
+    List<String> tenantList = TenantId.getAllTenantId();
 
     @Bean
     ApplicationRunner applicationRunner() {
@@ -94,7 +95,7 @@ public class ApplicationInitConfig {
     private void initAdminAccount() {
         if(userRepository.findByUsername("admin").isEmpty()) {
             Role adminRole = roleRepository.save(Role.builder()
-                    .name(PredefineRole.ADMIN_ROLE)
+                    .name(PredefinedRole.ADMIN_ROLE)
                     .description("Admin role")
                     .build());
 
