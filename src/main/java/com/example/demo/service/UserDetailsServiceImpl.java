@@ -23,6 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
 //        Lazy error -> need to handle
 //        List<GrantedAuthority> authorities = new ArrayList<>();
 //        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));

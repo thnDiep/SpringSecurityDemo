@@ -4,31 +4,26 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 
-@Setter
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "app_user")
-public class User {
+public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String username;
-    String password;
-    String firstName;
-    String lastName;
 
-    @ManyToMany
-    Set<Role> roles;
-    LocalDate dob;
+    @Column(unique = true, nullable = false)
+    String name;
 
-    @OneToMany(mappedBy = "user")
-    List<Seat> seats;
+    @Column(unique = true)
+    String prefixCode;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    Set<Seat> seats;
 }

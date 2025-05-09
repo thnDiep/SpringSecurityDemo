@@ -5,7 +5,6 @@ import com.example.demo.config.tenancy.TenantContext;
 import com.example.demo.constant.TenantId;
 import com.example.demo.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -22,7 +21,6 @@ import org.springframework.security.web.authentication.www.DigestAuthenticationE
 import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
 
 @Configuration
-@EnableAutoConfiguration
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[] JWT_PUBLIC_ENDPOINTS = {"/users", "/auth/token", "/auth/introspect"};
@@ -92,7 +90,6 @@ public class SecurityConfig {
         DigestAuthenticationFilter result = new DigestAuthenticationFilter();
         result.setUserDetailsService(userDetailsService);
         result.setCreateAuthenticatedToken(true);
-        result.setPasswordAlreadyEncoded(true);
         result.setAuthenticationEntryPoint(digestEntryPoint());
         return result;
     }

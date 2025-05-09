@@ -33,7 +33,6 @@ public class HibernateConfig  {
         return new DataSourceConfig(baseDataSource());
     }
 
-
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
             MultiTenantConnectionProvider<String> tenantConnectionProviderImpl,

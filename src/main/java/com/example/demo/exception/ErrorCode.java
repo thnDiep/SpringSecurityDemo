@@ -18,6 +18,8 @@ public enum ErrorCode {
     INVALID_TENANT_ID(1009, "Tenant ID is required for authentication", HttpStatus.UNAUTHORIZED),
     FAILED_BATCH(1010, "Error batch processing", HttpStatus.INTERNAL_SERVER_ERROR),
     SQL_ERROR(1011, "Failed to execute SQL script statement", HttpStatus.INTERNAL_SERVER_ERROR),
+    ROOM_NAME_EXISTED(1012, "This room name existed", HttpStatus.CONFLICT),
+    ROOM_CODE_PREFIX_EXISTED(1013, "This code prefix existed", HttpStatus.CONFLICT),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
