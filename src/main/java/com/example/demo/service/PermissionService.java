@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -24,11 +23,11 @@ public class PermissionService {
 
     public PermissionResponse create(PermissionRequest request) {
         Permission permission = permissionMapper.toPermission(request);
-        return permissionMapper.toPermissionRespnse(permissionRepository.save(permission));
+        return permissionMapper.toPermissionResponse(permissionRepository.save(permission));
     }
 
     public List<PermissionResponse> getAll() {
-        return permissionRepository.findAll().stream().map(permissionMapper::toPermissionRespnse).toList();
+        return permissionRepository.findAll().stream().map(permissionMapper::toPermissionResponse).toList();
     }
 
     public void delete(String permission) {

@@ -24,7 +24,7 @@ public class RoomService {
     RoomMapper roomMapper;
 
     public List<RoomResponse> getRooms() {
-        return roomRepository.findAll().stream().map(roomMapper::toRoomResponse).toList();
+        return roomRepository.findAllWithSeats().stream().map(roomMapper::toRoomResponse).toList();
     }
 
     @PreAuthorize("hasRole('ADMIN')")

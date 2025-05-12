@@ -20,6 +20,8 @@ public enum ErrorCode {
     SQL_ERROR(1011, "Failed to execute SQL script statement", HttpStatus.INTERNAL_SERVER_ERROR),
     ROOM_NAME_EXISTED(1012, "This room name existed", HttpStatus.CONFLICT),
     ROOM_CODE_PREFIX_EXISTED(1013, "This code prefix existed", HttpStatus.CONFLICT),
+    SEAT_NOT_FOUND(1014, "The seat not existed", HttpStatus.NOT_FOUND),
+    SEAT_ALREADY_BOOKED(1015, "The seat has already booked", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

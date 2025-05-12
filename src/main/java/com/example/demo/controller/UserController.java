@@ -3,9 +3,12 @@ package com.example.demo.controller;
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
 import com.example.demo.dto.response.ApiResponse;
+import com.example.demo.dto.response.BookingResponse;
+import com.example.demo.dto.response.SeatResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
+import com.example.demo.service.SeatService;
 import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -32,10 +35,9 @@ import java.util.List;
 @Slf4j
 public class UserController {
     JobLauncher jobLauncher;
-    JobRepository jobRepository;
     Job job;
     UserService userService;
-    DataSource dataSource;
+    SeatService seatService;
 
     @PostMapping
     public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
@@ -92,6 +94,13 @@ public class UserController {
     public ApiResponse<UserResponse> getMyProfile() {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getMyProfile())
+                .build();
+    }
+
+    @GetMapping("/myBooking")
+    public ApiResponse<List<BookingResponse>> getMyBooking() {
+        return ApiResponse.<List<BookingResponse>>builder()
+                .result(seatService.getMyBooking())
                 .build();
     }
 }

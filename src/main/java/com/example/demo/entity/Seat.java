@@ -34,5 +34,5 @@ public class Seat {
     User user;
 
     @Version
-    Integer version;
+    Integer version; // Optimistic lock
 }

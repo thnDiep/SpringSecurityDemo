@@ -1,7 +1,9 @@
 package com.example.demo.mapper;
 
+import com.example.demo.dto.UserDto;
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
+import com.example.demo.dto.response.UserInfo;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.entity.User;
 import org.mapstruct.Mapper;
@@ -15,4 +17,6 @@ public interface UserMapper {
 
     @Mapping(target = "roles", ignore = true)
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
+
+    UserInfo toUserInfo(User user);
 }
