@@ -42,7 +42,7 @@ public class AuthenticationService {
     PasswordEncoder passwordEncoder;
     InvalidatedTokenRepository invalidatedTokenRepository;
 
-    @NonFinal
+        @NonFinal
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 

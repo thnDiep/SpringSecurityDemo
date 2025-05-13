@@ -11,30 +11,23 @@ import com.example.demo.repository.SeatRepository;
 import com.example.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Optional;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class SeatServiceTest {
+public class BookingServiceTest {
 
     @Autowired
-    private SeatService seatService;
+    private BookingService bookingService;
 
     @Autowired
     private SeatRepository seatRepository;
@@ -77,7 +70,7 @@ public class SeatServiceTest {
             latch.await();
             setAuth("test-user1");
             try{
-                seatService.bookSeat("TEST11");
+                bookingService.bookingSeat("TEST11");
                 return null;
             } catch (Exception e){
                 return e;
@@ -88,7 +81,7 @@ public class SeatServiceTest {
             latch.await();
             setAuth("test-user2");
             try{
-                seatService.bookSeat("TEST11");
+                bookingService.bookingSeat("TEST11");
                 return null;
             } catch (Exception e){
                 return e;

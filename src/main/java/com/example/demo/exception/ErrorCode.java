@@ -22,6 +22,7 @@ public enum ErrorCode {
     ROOM_CODE_PREFIX_EXISTED(1013, "This code prefix existed", HttpStatus.CONFLICT),
     SEAT_NOT_FOUND(1014, "The seat not existed", HttpStatus.NOT_FOUND),
     SEAT_ALREADY_BOOKED(1015, "The seat has already booked", HttpStatus.BAD_REQUEST),
+    SEAT_HOLD_EXCEPTION(1016, "Seat hold interrupted", HttpStatus.INTERNAL_SERVER_ERROR),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

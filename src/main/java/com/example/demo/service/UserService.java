@@ -1,13 +1,17 @@
 package com.example.demo.service;
 
 import com.example.demo.constant.PredefinedRole;
+import com.example.demo.dto.UserSearchFilter;
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
+import com.example.demo.dto.response.BookingResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.entity.Role;
+import com.example.demo.entity.Seat;
 import com.example.demo.entity.User;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
+import com.example.demo.mapper.SeatMapper;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
@@ -32,6 +36,7 @@ public class UserService {
     UserRepository userRepository;
     RoleRepository roleRepository;
     UserMapper userMapper;
+    SeatMapper seatMapper;
     PasswordEncoder passwordEncoder;
 
     public UserResponse createUser(UserCreationRequest request) {
@@ -48,6 +53,11 @@ public class UserService {
         user.setRoles(roles);
 
         return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserResponse> searchUsers(UserSearchFilter filter){
+        return userRepository.searchUsers(filter).stream().map(userMapper::toUserResponse).toList();
     }
 
 //    @PreAuthorize("hasAuthority('APPROVE_POST')")
@@ -84,5 +94,13 @@ public class UserService {
         String name = context.getAuthentication().getName();
         User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
+    }
+
+    public List<BookingResponse> getMyBooking() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        List<Seat> seats = user.getSeats();
+
+        return seats.stream().map(seatMapper::toBookingResponse).toList();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.UserSearchFilter;
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
 import com.example.demo.dto.response.ApiResponse;
@@ -8,6 +9,7 @@ import com.example.demo.dto.response.SeatResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
+import com.example.demo.service.BookingService;
 import com.example.demo.service.SeatService;
 import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
@@ -37,7 +39,6 @@ public class UserController {
     JobLauncher jobLauncher;
     Job job;
     UserService userService;
-    SeatService seatService;
 
     @PostMapping
     public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
@@ -50,6 +51,13 @@ public class UserController {
     public ApiResponse<List<UserResponse>> getUsers() {
         return ApiResponse.<List<UserResponse>>builder()
                 .result(userService.getUsers())
+                .build();
+    }
+
+    @PostMapping("/search")
+    public ApiResponse<List<UserResponse>> searchUser(@RequestBody UserSearchFilter filter) {
+        return ApiResponse.<List<UserResponse>>builder()
+                .result(userService.searchUsers(filter))
                 .build();
     }
 
@@ -100,7 +108,7 @@ public class UserController {
     @GetMapping("/myBooking")
     public ApiResponse<List<BookingResponse>> getMyBooking() {
         return ApiResponse.<List<BookingResponse>>builder()
-                .result(seatService.getMyBooking())
+                .result(userService.getMyBooking())
                 .build();
     }
 }

@@ -9,10 +9,13 @@ import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +40,15 @@ public class ApplicationInitConfig {
     UserRepository userRepository;
     RoleRepository roleRepository;
     List<String> tenantList = TenantId.getAllTenantId();
+
+    @NonFinal
+    @Value("${app.env:default}")
+    String env;
+
+    @PostConstruct
+    public void init() {
+        System.out.println("ENV = " + env);
+    }
 
     @Bean
     ApplicationRunner applicationRunner() {
