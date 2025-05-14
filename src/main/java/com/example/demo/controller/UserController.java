@@ -55,7 +55,7 @@ public class UserController {
     }
 
     @PostMapping("/search")
-    public ApiResponse<List<UserResponse>> searchUser(@RequestBody UserSearchFilter filter) {
+    public ApiResponse<List<UserResponse>> searchUser(@RequestBody UserSearchFilter filter)  {
         return ApiResponse.<List<UserResponse>>builder()
                 .result(userService.searchUsers(filter))
                 .build();

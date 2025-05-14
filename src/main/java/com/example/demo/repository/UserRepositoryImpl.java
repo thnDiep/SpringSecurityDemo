@@ -6,7 +6,6 @@ import com.example.demo.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
-import org.springframework.security.core.parameters.P;
 
 import java.util.ArrayList;
 import java.util.List;

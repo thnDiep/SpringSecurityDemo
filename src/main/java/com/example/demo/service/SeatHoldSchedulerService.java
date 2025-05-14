@@ -1,7 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.constant.SeatStatus;
-import com.example.demo.repository.SeatRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

@@ -23,6 +23,13 @@ public class RoomService {
     SeatService seatService;
     RoomMapper roomMapper;
 
+    public RoomResponse getRoomById(Long id) {
+        Room room = roomRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_EXIST));
+
+        var seats = room.getSeats();
+        return roomMapper.toRoomResponse(room);
+    }
+
     public List<RoomResponse> getRooms() {
         return roomRepository.findAllWithSeats().stream().map(roomMapper::toRoomResponse).toList();
     }
