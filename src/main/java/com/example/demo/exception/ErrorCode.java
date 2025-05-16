@@ -24,6 +24,9 @@ public enum ErrorCode {
     SEAT_ALREADY_BOOKED(1015, "The seat has already booked", HttpStatus.BAD_REQUEST),
     SEAT_HOLD_EXCEPTION(1016, "Seat hold interrupted", HttpStatus.INTERNAL_SERVER_ERROR),
     ROOM_NOT_EXIST(1017, "The room not existed", HttpStatus.NOT_FOUND),
+    BOOKING_SYSTEM_UNDER_MAINTENANCE(1018, "System is under maintenance", HttpStatus.INTERNAL_SERVER_ERROR),
+    BOOKING_NOT_EXIST(1019, "The booking not existed", HttpStatus.BAD_REQUEST),
+    FAIL_PAYMENT(1019, "The payment is failed", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

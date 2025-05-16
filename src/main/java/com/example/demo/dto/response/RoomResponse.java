@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoomResponse {
+    Long id;
     String name;
-    String prefixCode;
     List<SeatResponse> seats;
 }

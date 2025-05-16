@@ -18,6 +18,8 @@ import com.example.demo.repository.UserRepository;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Cache;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContext;
@@ -56,7 +58,10 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @Cacheable("users")
     public List<UserResponse> searchUsers(UserSearchFilter filter){
+        log.info("Fetch to the database");
+
         return userRepository.searchUsers(filter).stream().map(userMapper::toUserResponse).toList();
     }
 
@@ -94,13 +99,5 @@ public class UserService {
         String name = context.getAuthentication().getName();
         User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
-    }
-
-    public List<BookingResponse> getMyBooking() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        List<Seat> seats = user.getSeats();
-
-        return seats.stream().map(seatMapper::toBookingResponse).toList();
     }
 }

@@ -1,34 +1,33 @@
 package com.example.demo.entity;
 
+import com.example.demo.constant.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
-@Setter
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "app_user")
-public class User {
+public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String username;
-    String password;
-    String firstName;
-    String lastName;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
 
     @ManyToMany
-    Set<Role> roles;
-    LocalDate dob;
+    List<Seat> seats;
 
-    @OneToMany(mappedBy = "user")
-    Set<Booking> bookings;
+    BookingStatus status;
+    LocalDateTime bookingTime;
 }

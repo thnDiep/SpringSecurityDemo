@@ -2,7 +2,7 @@ package com.example.demo.constant;
 
 public enum BookingStatus {
     SUCCESS,
-    FAIL,
+    CANCELLED,
     WAITING_PAYMENT,
-    FAIL_PAYMENT
+    EXPIRED,
 }

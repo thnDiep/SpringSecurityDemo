@@ -26,12 +26,8 @@ public class Seat {
     SeatStatus status = SeatStatus.AVAILABLE;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="room_id", nullable = false)
+    @JoinColumn(name = "room_id", nullable = false)
     Room room;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    User user;
 
     @Version
     Integer version; // Optimistic lock

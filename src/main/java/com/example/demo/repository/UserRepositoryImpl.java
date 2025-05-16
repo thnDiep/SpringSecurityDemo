@@ -6,6 +6,7 @@ import com.example.demo.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
         }
 
         query.select(user).distinct(true).where(cb.and(predicates.toArray(new Predicate[0])));
-
         return entityManager.createQuery(query).getResultList();
     }
 }

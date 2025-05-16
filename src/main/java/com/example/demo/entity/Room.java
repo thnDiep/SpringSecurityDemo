@@ -22,9 +22,12 @@ public class Room {
     @Column(unique = true, nullable = false)
     String name;
 
-    @Column(unique = true)
-    String prefixCode;
+    @Column(nullable = false)
+    Long totalRows;
+
+    @Column(nullable = false)
+    Long totalCols;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<Seat> seats;
+    Set<Seat> seats;
 }

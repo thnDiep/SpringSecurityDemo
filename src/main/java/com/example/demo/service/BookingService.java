@@ -2,77 +2,142 @@ package com.example.demo.service;
 
 import com.example.demo.constant.BookingStatus;
 import com.example.demo.constant.SeatStatus;
+import com.example.demo.dto.request.BookingRequest;
 import com.example.demo.dto.response.BookingResponse;
-import com.example.demo.dto.response.SeatStatusStats;
+import com.example.demo.entity.Booking;
 import com.example.demo.entity.Seat;
 import com.example.demo.entity.User;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
-import com.example.demo.mapper.SeatMapper;
+import com.example.demo.mapper.BookingMapper;
+import com.example.demo.repository.BookingRepository;
 import com.example.demo.repository.SeatRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
 public class BookingService {
-    SeatRepository seatRepository;
     UserRepository userRepository;
-    SeatMapper seatMapper;
-    SeatHoldSchedulerService seatHoldSchedulerService;
+    BookingRepository bookingRepository;
+    SeatRepository seatRepository;
 
-    public List<SeatStatusStats> getBookingStats() {
-        return seatRepository.seatStats();
-    }
+    SeatService seatService;
+    BookingMapper bookingMapper;
+    BookingHoldSchedulerService bookingHoldSchedulerService;
+
+    public static volatile boolean isBookingEnable = true;
 
     @Transactional
-    public BookingResponse bookingSeat(String code) {
-        Seat seat = seatRepository.findByCode(code).orElseThrow(() -> new AppException(ErrorCode.SEAT_NOT_FOUND));
+    public BookingResponse bookSeats(BookingRequest request) {
+        if(!isBookingEnable)
+            throw new AppException(ErrorCode.BOOKING_SYSTEM_UNDER_MAINTENANCE);
+
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if(seat.getStatus() != SeatStatus.AVAILABLE) {
-            throw new AppException(ErrorCode.SEAT_ALREADY_BOOKED);
-        }
+        List<Seat> seats = seatService.holdSeats(request.getSeatIds());
 
-        seat.setStatus(SeatStatus.BLOCKED);
-        seat.setUser(user);
-        seatRepository.save(seat);
+        Booking booking = Booking.builder()
+                .user(user)
+                .seats(seats)
+                .bookingTime(LocalDateTime.now())
+                .status(BookingStatus.WAITING_PAYMENT)
+                .build();
+        bookingRepository.save(booking);
 
-        seatHoldSchedulerService.holdSeat(code, 100000);
-        return seatMapper.toBookingResponse(seat);
+        bookingHoldSchedulerService.scheduleBookingRelease(booking.getId(), 5000);
+        return bookingMapper.toBookingResponse(booking);
     }
 
+
     @Transactional
-    public BookingResponse payment(String code, Boolean fakePayment){
-        Seat seat = seatRepository.findByCode(code).orElseThrow(() -> new AppException(ErrorCode.SEAT_NOT_FOUND));
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    public BookingResponse payBooking(Long id, boolean isSuccess) {
+        Booking booking = validateBooking(id);
 
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        List<Seat> seats = user.getSeats();
+        if(booking.getStatus() != BookingStatus.WAITING_PAYMENT)
+            throw new AppException(ErrorCode.BOOKING_NOT_EXIST);
 
-        if(seat.getStatus() != SeatStatus.BLOCKED || !seats.contains(seat)) {
-            throw new AppException(ErrorCode.SEAT_NOT_FOUND);
-        }
-
-        BookingResponse booking = seatMapper.toBookingResponse(seat);
-        if(fakePayment) {
-            seat.setStatus(SeatStatus.BOOKED);
-            seatHoldSchedulerService.cancelHold(code, true);
+        if(isSuccess) {
             booking.setStatus(BookingStatus.SUCCESS);
+            booking.getSeats().forEach(seat -> seat.setStatus(SeatStatus.BOOKED));
+            bookingRepository.save(booking);
+            seatRepository.saveAll(booking.getSeats());
+            bookingHoldSchedulerService.cancelSchedule(id);
+            return bookingMapper.toBookingResponse(booking);
         } else {
-            booking.setStatus(BookingStatus.FAIL_PAYMENT);
+            throw new AppException(ErrorCode.FAIL_PAYMENT);
         }
+    }
+
+    @Transactional
+    public BookingResponse cancelBooking(Long id) {
+        Booking booking = validateBooking(id);
+
+        if(booking.getStatus() == BookingStatus.CANCELLED || booking.getStatus() == BookingStatus.EXPIRED)
+            throw new AppException(ErrorCode.BOOKING_NOT_EXIST);
+        booking.setStatus(BookingStatus.CANCELLED);
+        booking.getSeats().forEach(seat -> seat.setStatus(SeatStatus.AVAILABLE));
+        bookingRepository.save(booking);
+        seatRepository.saveAll(booking.getSeats());
+
+        bookingHoldSchedulerService.cancelSchedule(id);
+        return bookingMapper.toBookingResponse(booking);
+    }
+
+    private Booking validateBooking(Long id) {
+        if(!isBookingEnable)
+            throw new AppException(ErrorCode.BOOKING_SYSTEM_UNDER_MAINTENANCE);
+
+        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_EXIST));
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if(!user.getBookings().contains(booking))
+            throw new AppException(ErrorCode.BOOKING_NOT_EXIST);
+
         return booking;
+    }
+
+    public void bookingTest() {
+        Thread t1 = new Thread() {
+            @Override
+            public void run() {
+                System.out.println("Booking test started.");
+                while(isBookingEnable) {
+
+                }
+                System.out.println("Booking test stopped.");
+            }
+        };
+        t1.start();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public void toggleBookingSystem(boolean enable) {
+        isBookingEnable = enable;
+    }
+
+    public Set<BookingResponse> getMyBooking() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Set<Booking> bookings = user.getBookings();
+
+        return bookings.stream().map(bookingMapper::toBookingResponse).collect(Collectors.toSet());
     }
 }

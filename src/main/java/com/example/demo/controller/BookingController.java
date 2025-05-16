@@ -1,41 +1,61 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.request.BookingRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.BookingResponse;
-import com.example.demo.dto.response.SeatStatusStats;
 import com.example.demo.service.BookingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RestController
-@RequestMapping("/booking")
+@RequestMapping("/bookings")
 public class BookingController {
     BookingService bookingService;
 
-    @GetMapping("/stats")
-    public ApiResponse<List<SeatStatusStats>> getBookingStats(){
-        return ApiResponse.<List<SeatStatusStats>>builder()
-                .result(bookingService.getBookingStats())
+    @PostMapping
+    public ApiResponse<BookingResponse> createBooking(@RequestBody BookingRequest request){
+        return ApiResponse.<BookingResponse>builder()
+                .result(bookingService.bookSeats(request))
                 .build();
     }
 
-    @PostMapping("/{code}")
-    public ApiResponse<BookingResponse> booking(@PathVariable String code){
+    @PostMapping("/pay")
+    public ApiResponse<BookingResponse> payBooking(@RequestParam Long id, @RequestParam boolean isSuccess){
         return ApiResponse.<BookingResponse>builder()
-                .result(bookingService.bookingSeat(code))
+                .result(bookingService.payBooking(id, isSuccess))
                 .build();
     }
 
-    @PostMapping("/{code}/payment/{fakePayment}")
-    public ApiResponse<BookingResponse> payment(@PathVariable String code, @PathVariable Boolean fakePayment){
+    @PostMapping("/cancel")
+    public ApiResponse<BookingResponse> cancelBooking(@RequestParam Long id){
         return ApiResponse.<BookingResponse>builder()
-                .result(bookingService.payment(code, fakePayment))
+                .result(bookingService.cancelBooking(id))
+                .build();
+    }
+
+    @PostMapping("/toggle")
+    public ApiResponse<String> toggleBookingSystem(@RequestParam boolean enable){
+        bookingService.toggleBookingSystem(enable);
+        return ApiResponse.<String>builder()
+                .result("Booking enabled = " + enable)
+                .build();
+    }
+
+    @GetMapping("/test")
+    public void book() {
+        bookingService.bookingTest();
+    }
+
+    @GetMapping("/myBooking")
+    public ApiResponse<Set<BookingResponse>> getMyBooking() {
+        return ApiResponse.<Set<BookingResponse>>builder()
+                .result(bookingService.getMyBooking())
                 .build();
     }
 }

@@ -7,47 +7,43 @@ import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
 import com.example.demo.mapper.RoomMapper;
 import com.example.demo.repository.RoomRepository;
+import com.example.demo.utility.RoomCreationQueueManager;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
 public class RoomService {
+    RoomCreationQueueManager queueManager;
     RoomRepository roomRepository;
-    SeatService seatService;
     RoomMapper roomMapper;
-
-    public RoomResponse getRoomById(Long id) {
-        Room room = roomRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_EXIST));
-
-        var seats = room.getSeats();
-        return roomMapper.toRoomResponse(room);
-    }
 
     public List<RoomResponse> getRooms() {
         return roomRepository.findAllWithSeats().stream().map(roomMapper::toRoomResponse).toList();
     }
 
+    public RoomResponse getRoomById(Long id) {
+        Room room = roomRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_EXIST));
+        return roomMapper.toRoomResponse(room);
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
-    public RoomResponse createRoom(RoomRequest request) {
+    @Transactional
+    public void createRoom(RoomRequest request) {
         if(roomRepository.existsByName(request.getName())) {
             throw new AppException(ErrorCode.ROOM_NAME_EXISTED);
         }
 
-        if(roomRepository.existsByPrefixCode(request.getPrefixCode())) {
-            throw new AppException(ErrorCode.ROOM_CODE_PREFIX_EXISTED);
-        }
-
         Room room = roomRepository.save(roomMapper.toRoom(request));
-        seatService.createSeatList(room, 20);
-
-        return roomMapper.toRoomResponse(room);
+        queueManager.submit(room);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

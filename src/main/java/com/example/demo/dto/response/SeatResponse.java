@@ -13,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SeatResponse {
     Long id;
+    Long roomId;
     String code;
     SeatStatus status;
-    UserInfo user;
 }

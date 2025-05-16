@@ -105,10 +105,5 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping("/myBooking")
-    public ApiResponse<List<BookingResponse>> getMyBooking() {
-        return ApiResponse.<List<BookingResponse>>builder()
-                .result(userService.getMyBooking())
-                .build();
-    }
+
 }

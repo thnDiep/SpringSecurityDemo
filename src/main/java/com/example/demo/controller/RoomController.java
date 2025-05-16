@@ -34,18 +34,18 @@ public class RoomController {
     }
 
     @PostMapping
-    public ApiResponse<RoomResponse> createRoom(@RequestBody RoomRequest request) {
-        return ApiResponse.<RoomResponse>builder()
-                .result(roomService.createRoom(request))
+    public ApiResponse<String> createRoom(@RequestBody RoomRequest request) {
+        roomService.createRoom(request);
+        return ApiResponse.<String>builder()
+                .result("Room " + request.getName() + " has been created.")
                 .build();
     }
-
 
     @DeleteMapping("{id}")
     public ApiResponse<String> deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);
         return ApiResponse.<String>builder()
-                .result("Room has been deleted.")
+                .result("Room " + id + " has been created.")
                 .build();
     }
 }

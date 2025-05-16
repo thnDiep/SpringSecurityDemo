@@ -14,9 +14,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggingAspect {
     @Before("execution(* com.example.demo.service..*.*(..)) && " +
-            "!within(com.example.demo.service.BookingService) && " +
-            "!within(com.example.demo.service.SeatService) && " +
-            "!within(com.example.demo.service.SeatHoldSchedulerService)")
+            "!within(com.example.demo.service.BookingHoldSchedulerService) && " +
+            "!within(com.example.demo.service.BookingReleaseService)")
     public void logUserPerformAction(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
 
@@ -27,18 +26,12 @@ public class LoggingAspect {
         log.info("{} - User '{}' is invoking '{}'", TenantContext.getCurrentTenant(), username, methodName);
     }
 
-    @Before("within(com.example.demo.service.BookingService)")
-    public void logUserPerformActionOnSeat(JoinPoint joinPoint) {
-        String methodName = joinPoint.getSignature().getName();
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info("{} - User '{}' performed '{}' on seat '{}'", TenantContext.getCurrentTenant(), username, methodName, joinPoint.getArgs().length > 0 ? joinPoint.getArgs()[0] : "");
-    }
-
-    @Before("within(com.example.demo.service.SeatHoldSchedulerService)")
+    @Before("within(com.example.demo.service.BookingHoldSchedulerService) && " +
+            "within(com.example.demo.service.BookingReleaseService")
     public void logExecution(JoinPoint joinPoint) throws Throwable {
-        String seatId = (String) joinPoint.getArgs()[0];
+        Long bookingId = (Long) joinPoint.getArgs()[0];
         String methodName = joinPoint.getSignature().getName();
 
-        log.info("{} - Seat {} - is performed {} method",TenantContext.getCurrentTenant(), seatId, methodName);
+        log.info("{} - Booking #{} is performed {} method",TenantContext.getCurrentTenant(), bookingId, methodName);
     }
 }

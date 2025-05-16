@@ -6,11 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface SeatRepository extends JpaRepository<Seat, Long> {
-    Optional<Seat> findByCode(String code);
-
-    @Query(value = "SELECT status, COUNT(*) FROM seat GROUP BY status", nativeQuery = true)
+    @Query(value = "SELECT room_id as roomId, status, COUNT(*) FROM default_schema.seat GROUP BY room_id, status", nativeQuery = true)
     List<SeatStatusStats> seatStats();
 }
