@@ -38,6 +38,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers("/admin-dashboard").permitAll()              // WebSocket
+                        .requestMatchers("/admin-dashboard.html").permitAll()         // Static HTML file
                         .requestMatchers("/auth/**").denyAll()
                         .anyRequest().authenticated()
                 )
@@ -53,6 +55,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.POST, JWT_PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers("/admin-dashboard").permitAll()              // WebSocket
+                        .requestMatchers("/admin-dashboard.html").permitAll()         // Static HTML file
                         .anyRequest().authenticated()
                 )
                 //  token -> (JwtDecoder) -> Jwt -> (JwtAuthenticationConverter) -> Authentication

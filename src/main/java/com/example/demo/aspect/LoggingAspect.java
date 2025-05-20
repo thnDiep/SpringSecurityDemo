@@ -5,9 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Method;
 
 @Aspect
 @Slf4j
@@ -17,13 +21,18 @@ public class LoggingAspect {
             "!within(com.example.demo.service.BookingHoldSchedulerService) && " +
             "!within(com.example.demo.service.BookingReleaseService)")
     public void logUserPerformAction(JoinPoint joinPoint) {
-        String methodName = joinPoint.getSignature().getName();
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        Method method = methodSignature.getMethod();
+
+        if (method.isAnnotationPresent(Scheduled.class)) {
+            return ;
+        }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (authentication != null && authentication.isAuthenticated())
                 ? authentication.getName() : "anonymous";
 
-        log.info("{} - User '{}' is invoking '{}'", TenantContext.getCurrentTenant(), username, methodName);
+        log.info("{} - User '{}' is invoking '{}'", TenantContext.getCurrentTenant(), username, method.getName());
     }
 
     @Before("within(com.example.demo.service.BookingHoldSchedulerService) && " +
