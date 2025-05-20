@@ -28,6 +28,7 @@ public class Booking {
     @ManyToMany
     List<Seat> seats;
 
+    @Enumerated(EnumType.STRING)
     BookingStatus status;
     LocalDateTime bookingTime;
 }

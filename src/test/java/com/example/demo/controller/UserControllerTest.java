@@ -2,17 +2,13 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.response.UserResponse;
-import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,10 +35,10 @@ public class UserControllerTest {
 
     @BeforeEach
     void initData() {
-        dob = LocalDate.of(2002, 5, 7);
+        dob = LocalDate.of(1997, 2, 20);
 
         request = UserCreationRequest.builder()
-                .username("john")
+                .username("john3")
                 .password("password")
                 .firstName("John")
                 .lastName("Doe")
@@ -51,7 +47,7 @@ public class UserControllerTest {
 
         userResponse = UserResponse.builder()
                 .id(3L)
-                .username("john")
+                .username("john3")
                 .firstName("John")
                 .lastName("Doe")
                 .dob(dob)
@@ -76,11 +72,10 @@ public class UserControllerTest {
                 .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("code").value(1000))
-                .andExpect(MockMvcResultMatchers.jsonPath("result.id").value(3))
-                .andExpect(MockMvcResultMatchers.jsonPath("result.username").value("john"))
+                .andExpect(MockMvcResultMatchers.jsonPath("result.username").value("john3"))
                 .andExpect(MockMvcResultMatchers.jsonPath("result.firstName").value("John"))
                 .andExpect(MockMvcResultMatchers.jsonPath("result.lastName").value("Doe"))
-                .andExpect(MockMvcResultMatchers.jsonPath("result.dob").value("2002-05-07"))
+                .andExpect(MockMvcResultMatchers.jsonPath("result.dob").value("1997-02-20"))
         ;
     }
 

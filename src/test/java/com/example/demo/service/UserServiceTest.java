@@ -6,6 +6,7 @@ import com.example.demo.dto.response.UserResponse;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.exception.AppException;
+import com.example.demo.exception.ErrorCode;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
@@ -28,6 +29,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest
 public class UserServiceTest {
+
     @InjectMocks
     private UserService userService;
 
@@ -114,8 +116,7 @@ public class UserServiceTest {
 
         // Assert
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, exception.getErrorCode().getStatusCode());
-        Assertions.assertEquals(1002, exception.getErrorCode().getCode());
-        Assertions.assertEquals("User existed", exception.getErrorCode().getMessage());
+        Assertions.assertEquals(ErrorCode.USER_EXISTED, exception.getErrorCode());
     }
 
     @Test

@@ -4,21 +4,17 @@ import com.example.demo.constant.PredefinedRole;
 import com.example.demo.dto.UserSearchFilter;
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
-import com.example.demo.dto.response.BookingResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.entity.Role;
-import com.example.demo.entity.Seat;
 import com.example.demo.entity.User;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
-import com.example.demo.mapper.SeatMapper;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.Cache;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,7 +34,6 @@ public class UserService {
     UserRepository userRepository;
     RoleRepository roleRepository;
     UserMapper userMapper;
-    SeatMapper seatMapper;
     PasswordEncoder passwordEncoder;
 
     public UserResponse createUser(UserCreationRequest request) {

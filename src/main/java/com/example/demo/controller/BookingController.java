@@ -47,11 +47,6 @@ public class BookingController {
                 .build();
     }
 
-    @GetMapping("/test")
-    public void book() {
-        bookingService.bookingTest();
-    }
-
     @GetMapping("/myBooking")
     public ApiResponse<Set<BookingResponse>> getMyBooking() {
         return ApiResponse.<Set<BookingResponse>>builder()

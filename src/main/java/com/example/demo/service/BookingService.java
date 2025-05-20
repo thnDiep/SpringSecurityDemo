@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -41,10 +42,11 @@ public class BookingService {
     BookingHoldSchedulerService bookingHoldSchedulerService;
 
     public static volatile boolean isBookingEnable = true;
+    public static AtomicInteger currentHoldBooking = new AtomicInteger(0);
 
     @Transactional
     public BookingResponse bookSeats(BookingRequest request) {
-        if(!isBookingEnable)
+        if (!isBookingEnable)
             throw new AppException(ErrorCode.BOOKING_SYSTEM_UNDER_MAINTENANCE);
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -60,6 +62,7 @@ public class BookingService {
                 .build();
         bookingRepository.save(booking);
 
+        currentHoldBooking.incrementAndGet();
         bookingHoldSchedulerService.scheduleBookingRelease(booking.getId(), 5000);
         return bookingMapper.toBookingResponse(booking);
     }
@@ -77,6 +80,8 @@ public class BookingService {
             booking.getSeats().forEach(seat -> seat.setStatus(SeatStatus.BOOKED));
             bookingRepository.save(booking);
             seatRepository.saveAll(booking.getSeats());
+
+            currentHoldBooking.decrementAndGet();
             bookingHoldSchedulerService.cancelSchedule(id);
             return bookingMapper.toBookingResponse(booking);
         } else {
@@ -90,11 +95,13 @@ public class BookingService {
 
         if(booking.getStatus() == BookingStatus.CANCELLED || booking.getStatus() == BookingStatus.EXPIRED)
             throw new AppException(ErrorCode.BOOKING_NOT_EXIST);
+
         booking.setStatus(BookingStatus.CANCELLED);
         booking.getSeats().forEach(seat -> seat.setStatus(SeatStatus.AVAILABLE));
         bookingRepository.save(booking);
         seatRepository.saveAll(booking.getSeats());
 
+        currentHoldBooking.decrementAndGet();
         bookingHoldSchedulerService.cancelSchedule(id);
         return bookingMapper.toBookingResponse(booking);
     }
@@ -114,20 +121,6 @@ public class BookingService {
         return booking;
     }
 
-    public void bookingTest() {
-        Thread t1 = new Thread() {
-            @Override
-            public void run() {
-                System.out.println("Booking test started.");
-                while(isBookingEnable) {
-
-                }
-                System.out.println("Booking test stopped.");
-            }
-        };
-        t1.start();
-    }
-
     @PreAuthorize("hasRole('ADMIN')")
     public void toggleBookingSystem(boolean enable) {
         isBookingEnable = enable;
@@ -139,5 +132,17 @@ public class BookingService {
         Set<Booking> bookings = user.getBookings();
 
         return bookings.stream().map(bookingMapper::toBookingResponse).collect(Collectors.toSet());
+    }
+
+    @Transactional
+    public void removeBooking(Long id) {
+        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_EXIST));
+        if(booking.getStatus() == BookingStatus.WAITING_PAYMENT) {
+            currentHoldBooking.decrementAndGet();
+            bookingHoldSchedulerService.cancelSchedule(id);
+        }
+        booking.getSeats().forEach(seat -> seat.setStatus(SeatStatus.AVAILABLE));
+        seatRepository.saveAll(booking.getSeats());
+        bookingRepository.delete(booking);
     }
 }

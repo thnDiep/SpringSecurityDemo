@@ -29,6 +29,6 @@ public class User {
     Set<Role> roles;
     LocalDate dob;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Booking> bookings;
 }
