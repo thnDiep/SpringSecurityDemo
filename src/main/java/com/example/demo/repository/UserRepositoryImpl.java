@@ -6,7 +6,9 @@ import com.example.demo.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +18,29 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     EntityManager entityManager;
 
     @Override
-    public List<User> searchUsers(UserSearchFilter filter) {
+    public Page<User> searchUsers(UserSearchFilter filter, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<User> query = cb.createQuery(User.class);
 
+        CriteriaQuery<User> query = cb.createQuery(User.class);
         Root<User> user = query.from(User.class);
         Join<User, Role> roleJoin = user.join("roles", JoinType.LEFT);
 
+        List<Predicate> predicates = buildSearchUserPredicates(filter, cb, user, roleJoin);
+        query.select(user).distinct(true).where(cb.and(predicates.toArray(new Predicate[0])));
+        List<User> users = entityManager.createQuery(query).setFirstResult((int) pageable.getOffset()).setMaxResults(pageable.getPageSize()).getResultList();
+
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<User> countUser = countQuery.from(User.class);
+        Join<User, Role> countRoleJoin = user.join("roles", JoinType.LEFT);
+
+        List<Predicate> countPredicates = buildSearchUserPredicates(filter, cb, countUser, countRoleJoin);
+        countQuery.select(cb.countDistinct(countUser)).where(cb.and(countPredicates.toArray(new Predicate[0])));
+        Long total = entityManager.createQuery(countQuery).getSingleResult();
+
+        return new PageImpl<>(users, pageable, total);
+    }
+
+    private List<Predicate> buildSearchUserPredicates(UserSearchFilter filter, CriteriaBuilder cb, Root<User> user, Join<User, Role> roleJoin) {
         List<Predicate> predicates = new ArrayList<>();
 
         if (filter.getKeyword() != null && !filter.getKeyword().isEmpty()) {
@@ -36,19 +54,18 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
             );
         }
 
-        if(filter.getFromDob() != null) {
+        if (filter.getFromDob() != null) {
             predicates.add(cb.greaterThanOrEqualTo(user.get("dob"), filter.getFromDob()));
         }
 
-        if(filter.getToDob() != null) {
+        if (filter.getToDob() != null) {
             predicates.add(cb.lessThanOrEqualTo(user.get("dob"), filter.getToDob()));
         }
 
-        if(filter.getRoles() != null && !filter.getRoles().isEmpty()) {
+        if (filter.getRoles() != null && !filter.getRoles().isEmpty()) {
             predicates.add(roleJoin.get("name").in(filter.getRoles()));
         }
 
-        query.select(user).distinct(true).where(cb.and(predicates.toArray(new Predicate[0])));
-        return entityManager.createQuery(query).getResultList();
+        return predicates;
     }
 }

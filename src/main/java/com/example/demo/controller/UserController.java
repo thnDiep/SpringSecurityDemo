@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.UserSearchFilter;
+import com.example.demo.dto.pagination.PaginationResponse;
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
 import com.example.demo.dto.response.ApiResponse;
@@ -23,6 +24,7 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,9 +57,9 @@ public class UserController {
     }
 
     @PostMapping("/search")
-    public ApiResponse<List<UserResponse>> searchUser(@RequestBody UserSearchFilter filter)  {
-        return ApiResponse.<List<UserResponse>>builder()
-                .result(userService.searchUsers(filter))
+    public ApiResponse<PaginationResponse<UserResponse>> searchUser(@RequestBody UserSearchFilter filter, @RequestParam(defaultValue = "0") int page)  {
+        return ApiResponse.<PaginationResponse<UserResponse>>builder()
+                .result(userService.searchUsers(filter, page))
                 .build();
     }
 

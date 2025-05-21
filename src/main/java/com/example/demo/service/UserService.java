@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.constant.PredefinedRole;
 import com.example.demo.dto.UserSearchFilter;
+import com.example.demo.dto.pagination.PaginationResponse;
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
 import com.example.demo.dto.response.UserResponse;
@@ -9,6 +10,7 @@ import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
+import com.example.demo.mapper.PaginationMapper;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
@@ -16,6 +18,10 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContext;
@@ -37,7 +43,7 @@ public class UserService {
     PasswordEncoder passwordEncoder;
 
     public UserResponse createUser(UserCreationRequest request) {
-        if(userRepository.existsByUsername(request.getUsername())) {
+        if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
@@ -54,13 +60,17 @@ public class UserService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Cacheable("users")
-    public List<UserResponse> searchUsers(UserSearchFilter filter){
+    public PaginationResponse<UserResponse> searchUsers(UserSearchFilter filter, int page) {
         log.info("Fetch to the database");
+        Pageable pageable = PageRequest.of(page, 2, Sort.by("id").ascending());
 
-        return userRepository.searchUsers(filter).stream().map(userMapper::toUserResponse).toList();
+        Page<UserResponse> userResponsePage = userRepository.searchUsers(filter, pageable).map(userMapper::toUserResponse);
+        return PaginationResponse.<UserResponse>builder()
+                .pagination(PaginationMapper.toPaginationMeta(userResponsePage))
+                .data(userResponsePage.getContent()).build();
     }
 
-//    @PreAuthorize("hasAuthority('APPROVE_POST')")
+    //    @PreAuthorize("hasAuthority('APPROVE_POST')")
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
