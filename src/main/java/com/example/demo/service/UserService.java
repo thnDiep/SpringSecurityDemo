@@ -72,8 +72,13 @@ public class UserService {
 
     //    @PreAuthorize("hasAuthority('APPROVE_POST')")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponse> getUsers() {
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+    public PaginationResponse<UserResponse> getUsers(int page) {
+        Pageable pageable = PageRequest.of(page, 5, Sort.by("id").ascending());
+        Page<UserResponse> userResponsePage = userRepository.findAll(pageable).map(userMapper::toUserResponse);
+        return PaginationResponse.<UserResponse>builder()
+                .pagination(PaginationMapper.toPaginationMeta(userResponsePage))
+                .data(userResponsePage.getContent())
+                .build();
     }
 
     @PostAuthorize("returnObject.username == authentication.name or hasRole('ADMIN')")

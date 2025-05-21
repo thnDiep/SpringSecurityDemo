@@ -50,9 +50,9 @@ public class UserController {
     }
 
     @GetMapping
-    public ApiResponse<List<UserResponse>> getUsers() {
-        return ApiResponse.<List<UserResponse>>builder()
-                .result(userService.getUsers())
+    public ApiResponse<PaginationResponse<UserResponse>> getUsers(@RequestParam(defaultValue = "0") int page) {
+        return ApiResponse.<PaginationResponse<UserResponse>>builder()
+                .result(userService.getUsers(page))
                 .build();
     }
 

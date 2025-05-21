@@ -31,7 +31,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<User> countUser = countQuery.from(User.class);
-        Join<User, Role> countRoleJoin = user.join("roles", JoinType.LEFT);
+        Join<User, Role> countRoleJoin = countUser.join("roles", JoinType.LEFT);
 
         List<Predicate> countPredicates = buildSearchUserPredicates(filter, cb, countUser, countRoleJoin);
         countQuery.select(cb.countDistinct(countUser)).where(cb.and(countPredicates.toArray(new Predicate[0])));
