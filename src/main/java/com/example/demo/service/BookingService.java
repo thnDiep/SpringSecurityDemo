@@ -2,6 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.constant.BookingStatus;
 import com.example.demo.constant.SeatStatus;
+import com.example.demo.dto.filter.BookingSearchFilter;
+import com.example.demo.dto.pagination.PaginationMeta;
+import com.example.demo.dto.pagination.PaginationResponse;
 import com.example.demo.dto.request.BookingRequest;
 import com.example.demo.dto.response.BookingResponse;
 import com.example.demo.entity.Booking;
@@ -10,6 +13,7 @@ import com.example.demo.entity.User;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
 import com.example.demo.mapper.BookingMapper;
+import com.example.demo.mapper.PaginationMapper;
 import com.example.demo.repository.BookingRepository;
 import com.example.demo.repository.SeatRepository;
 import com.example.demo.repository.UserRepository;
@@ -18,6 +22,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -120,12 +128,15 @@ public class BookingService {
         bookingSystemState.setBookingEnable(enable);
     }
 
-    public Set<BookingResponse> getMyBooking() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        Set<Booking> bookings = user.getBookings();
+    public PaginationResponse<BookingResponse> getMyBooking(BookingSearchFilter filter, int page) {
+        filter.setUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        Pageable pageable = PageRequest.of(page, 2, Sort.by("id"));
 
-        return bookings.stream().map(bookingMapper::toBookingResponse).collect(Collectors.toSet());
+        Page<BookingResponse> bookingPage = bookingRepository.searchBooking(filter, pageable).map(bookingMapper::toBookingResponse);
+        return PaginationResponse.<BookingResponse>builder()
+                .data(bookingPage.getContent())
+                .pagination(PaginationMapper.toPaginationMeta(bookingPage))
+                .build();
     }
 
     @Transactional

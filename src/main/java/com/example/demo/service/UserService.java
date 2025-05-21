@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.constant.PredefinedRole;
-import com.example.demo.dto.UserSearchFilter;
+import com.example.demo.dto.filter.UserSearchFilter;
 import com.example.demo.dto.pagination.PaginationResponse;
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
@@ -30,7 +30,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)

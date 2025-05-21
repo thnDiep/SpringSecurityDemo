@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.filter.BookingSearchFilter;
+import com.example.demo.dto.pagination.PaginationResponse;
 import com.example.demo.dto.request.BookingRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.BookingResponse;
@@ -48,9 +50,9 @@ public class BookingController {
     }
 
     @GetMapping("/myBooking")
-    public ApiResponse<Set<BookingResponse>> getMyBooking() {
-        return ApiResponse.<Set<BookingResponse>>builder()
-                .result(bookingService.getMyBooking())
+    public ApiResponse<PaginationResponse<BookingResponse>> getMyBooking(@RequestBody BookingSearchFilter filter, @RequestParam(defaultValue = "0") int page) {
+        return ApiResponse.<PaginationResponse<BookingResponse>>builder()
+                .result(bookingService.getMyBooking(filter, page))
                 .build();
     }
 }

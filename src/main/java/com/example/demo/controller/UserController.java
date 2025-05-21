@@ -1,17 +1,13 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.UserSearchFilter;
+import com.example.demo.dto.filter.UserSearchFilter;
 import com.example.demo.dto.pagination.PaginationResponse;
 import com.example.demo.dto.request.UserCreationRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
 import com.example.demo.dto.response.ApiResponse;
-import com.example.demo.dto.response.BookingResponse;
-import com.example.demo.dto.response.SeatResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.exception.AppException;
 import com.example.demo.exception.ErrorCode;
-import com.example.demo.service.BookingService;
-import com.example.demo.service.SeatService;
 import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -22,14 +18,8 @@ import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
-import org.springframework.data.domain.Page;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import javax.sql.DataSource;
-import java.util.List;
 
 
 @RestController
