@@ -10,6 +10,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -23,17 +24,20 @@ import java.util.Map;
 public class HibernateConfig  {
     @Bean(name="baseDataSource")
     @ConfigurationProperties("spring.datasource")
+    @Profile("!test")
     public DataSource baseDataSource() {
         return DataSourceBuilder.create().build();
     }
 
     @Bean(name="tenantDataSource")
     @Primary
+    @Profile("!test")
     public DataSource dataSource() {
         return new DataSourceConfig(baseDataSource());
     }
 
     @Bean
+    @Profile("!test")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
             MultiTenantConnectionProvider<String> tenantConnectionProviderImpl,
             CurrentTenantIdentifierResolver<String> tenantIdentifierResolver) {
@@ -51,6 +55,7 @@ public class HibernateConfig  {
     }
 
     @Bean
+    @Profile("!test")
     public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
     }

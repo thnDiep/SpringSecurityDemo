@@ -19,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,6 +31,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@TestPropertySource(properties = {
+        "JWT_SIGNER_KEY=testkey123"
+})
 public class BookingServiceTest {
     @InjectMocks
     private BookingService bookingService;

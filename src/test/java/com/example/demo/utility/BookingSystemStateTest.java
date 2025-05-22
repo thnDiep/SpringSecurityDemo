@@ -3,11 +3,17 @@ package com.example.demo.utility;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@TestPropertySource(properties = {
+        "JWT_SIGNER_KEY=testkey123"
+})
 public class BookingSystemStateTest {
     @InjectMocks
     BookingSystemState bookingSystemState;

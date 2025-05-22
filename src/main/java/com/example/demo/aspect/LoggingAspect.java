@@ -6,6 +6,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,7 @@ import java.lang.reflect.Method;
 @Aspect
 @Slf4j
 @Component
+@Profile("!test")
 public class LoggingAspect {
     @Before("execution(* com.example.demo.service..*.*(..)) && " +
             "!within(com.example.demo.service.BookingHoldSchedulerService) && " +
