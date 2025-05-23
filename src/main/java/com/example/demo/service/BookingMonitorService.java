@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.config.websocket.AdminDashboardWebsocketHandler;
+import com.example.demo.config.websocket.AdminDashboardHandler;
 import com.example.demo.utility.BookingSystemState;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import java.io.IOException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookingMonitorService {
     BookingSystemState bookingSystemState;
-    AdminDashboardWebsocketHandler webSocketHandler;
+    AdminDashboardHandler webSocketHandler;
 
     @NonFinal
     private boolean lastEnable = true;

@@ -11,6 +11,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -24,6 +25,7 @@ import org.springframework.security.web.authentication.www.DigestAuthenticationF
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[] JWT_PUBLIC_ENDPOINTS = {"/users", "/auth/token", "/auth/introspect"};
+    private final String[] UI_PUBLIC_ENDPOINTS = {"/admin-dashboard.html", "/chat.html", "/css/**", "/js/**", "/supports/**"};
 
     CustomJwtDecoder customJwtDecoder;
 
@@ -38,8 +40,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers("/admin-dashboard").permitAll()              // WebSocket
-                        .requestMatchers("/admin-dashboard.html").permitAll()         // Static HTML file
+                        .requestMatchers(UI_PUBLIC_ENDPOINTS).permitAll()              // WebSocket
                         .requestMatchers("/auth/**").denyAll()
                         .anyRequest().authenticated()
                 )
@@ -55,8 +56,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.POST, JWT_PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers("/admin-dashboard").permitAll()              // WebSocket
-                        .requestMatchers("/admin-dashboard.html").permitAll()         // Static HTML file
+                        .requestMatchers(UI_PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 )
                 //  token -> (JwtDecoder) -> Jwt -> (JwtAuthenticationConverter) -> Authentication
