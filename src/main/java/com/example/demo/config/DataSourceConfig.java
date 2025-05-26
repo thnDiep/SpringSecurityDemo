@@ -2,6 +2,7 @@ package com.example.demo.config;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.sql.DataSource;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -20,14 +21,18 @@ public class DataSourceConfig extends AbstractDataSource {
     @Override
     public Connection getConnection() throws SQLException {
         Connection conn = delegate.getConnection();
-        conn.createStatement().execute("USE " + TenantContext.getCurrentTenant());
+        try (Statement statement = conn.createStatement()) {
+            statement.execute("USE " + TenantContext.getCurrentTenant());
+        }
         return conn;
     }
 
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
         Connection conn = delegate.getConnection(username, password);
-        conn.createStatement().execute("USE " + TenantContext.getCurrentTenant());
+        try (Statement statement = conn.createStatement()) {
+            statement.execute("USE " + TenantContext.getCurrentTenant());
+        }
         return conn;
     }
 }

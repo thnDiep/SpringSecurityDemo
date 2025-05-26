@@ -21,7 +21,6 @@ public class WebSocketEventListener {
 
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
-        SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
         log.info("New WebSocket connection: {}", event.getMessage().getHeaders());
     }
 

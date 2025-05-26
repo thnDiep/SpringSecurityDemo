@@ -8,7 +8,9 @@ import org.springframework.stereotype.Component;
 import com.example.demo.entity.Room;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 @Component
 public class RoomCreationQueueManager {
@@ -18,7 +20,8 @@ public class RoomCreationQueueManager {
         try {
             queue.put(room);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
+            log.warn("Thread was interrupted during queue.put()");
         }
     }
 }

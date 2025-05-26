@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,24 +18,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserDetailsServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user =
                 userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
-        //        Lazy error -> need to handle
-        //        List<GrantedAuthority> authorities = new ArrayList<>();
-        //        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-
-        //        for (Role role : user.getRoles()) {
-        //            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
-        //            for(Permission permission :role.getPermissions()) {
-        //                authorities.add(new SimpleGrantedAuthority(permission.getName()));
-        //            }
-        //        }
 
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())

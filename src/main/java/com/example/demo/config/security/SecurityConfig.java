@@ -1,6 +1,5 @@
 package com.example.demo.config.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -23,15 +22,18 @@ import com.example.demo.service.UserDetailsServiceImpl;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final String[] JWT_PUBLIC_ENDPOINTS = {"/users", "/auth/token", "/auth/introspect"};
-    private final String[] UI_PUBLIC_ENDPOINTS = {
+    private static final String[] JWT_PUBLIC_ENDPOINTS = {"/users", "/auth/token", "/auth/introspect"};
+    private static final String[] UI_PUBLIC_ENDPOINTS = {
         "/admin-dashboard.html", "/chat.html", "/css/**", "/js/**", "/supports/**"
     };
 
-    CustomJwtDecoder customJwtDecoder;
+    private final CustomJwtDecoder customJwtDecoder;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    UserDetailsServiceImpl userDetailsService;
+    public SecurityConfig(CustomJwtDecoder customJwtDecoder, UserDetailsServiceImpl userDetailsService) {
+        this.customJwtDecoder = customJwtDecoder;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     @Order(1)

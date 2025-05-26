@@ -49,9 +49,13 @@ public class ApplicationInitConfig {
     @Value("${app.env:default}")
     String env;
 
+    @NonFinal
+    @Value("${default-admin-password:admin}")
+    String password;
+
     @PostConstruct
     public void init() {
-        System.out.println("ENV = " + env);
+        log.info("ENV = " + env);
     }
 
     @Bean
@@ -80,13 +84,18 @@ public class ApplicationInitConfig {
         popular.execute(dataSource);
     }
 
-    private boolean isBatchSchemaInitialized(String tenantId) {
+    private boolean isBatchSchemaInitialized(String tenantId) throws SQLException {
+        Connection conn = null;
         try {
-            Connection conn = dataSource.getConnection();
+            conn = dataSource.getConnection();
             ResultSet rs = conn.getMetaData().getTables(tenantId, null, "batch_job_instance", null);
             return rs.next();
         } catch (SQLException e) {
             throw new AppException(ErrorCode.SQL_ERROR);
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
         }
     }
 
@@ -96,18 +105,24 @@ public class ApplicationInitConfig {
         popular.execute(dataSource);
     }
 
-    private boolean isDefaultSchemaInitialized(String tenantId) {
+    private boolean isDefaultSchemaInitialized(String tenantId) throws SQLException {
+        Connection conn = null;
         try {
-            Connection conn = dataSource.getConnection();
+            conn = dataSource.getConnection();
             ResultSet rs = conn.getMetaData().getTables(tenantId, null, "app_user", null);
             return rs.next();
         } catch (SQLException e) {
             throw new AppException(ErrorCode.SQL_ERROR);
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
         }
     }
 
     private void initAdminAccount() {
-        if (userRepository.findByUsername("admin").isEmpty()) {
+        String username = "admin";
+        if (userRepository.findByUsername(username).isEmpty()) {
             Role adminRole = roleRepository.save(Role.builder()
                     .name(PredefinedRole.ADMIN_ROLE)
                     .description("Admin role")
@@ -117,8 +132,8 @@ public class ApplicationInitConfig {
             roles.add(adminRole);
 
             userRepository.save(User.builder()
-                    .username("admin")
-                    .password(passwordEncoder.encode("admin"))
+                    .username(username)
+                    .password(passwordEncoder.encode(password))
                     .roles(roles)
                     .build());
 

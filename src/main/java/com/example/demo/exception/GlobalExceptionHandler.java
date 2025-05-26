@@ -23,11 +23,11 @@ public class GlobalExceptionHandler {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception) {
+    ResponseEntity<ApiResponse<Void>> handlingRuntimeException(RuntimeException exception) {
         log.error("Exception: ", exception);
         ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
@@ -36,10 +36,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = AppException.class)
-    ResponseEntity<ApiResponse> handlingAppException(AppException exception) {
+    ResponseEntity<ApiResponse<Void>> handlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
@@ -48,10 +48,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = AuthorizationDeniedException.class)
-    ResponseEntity<ApiResponse> handlingAccessDeniedException(AuthorizationDeniedException exception) {
+    ResponseEntity<ApiResponse<Void>> handlingAccessDeniedException(AuthorizationDeniedException exception) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
@@ -60,18 +60,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    ResponseEntity<ApiResponse> handlingValidation(MethodArgumentNotValidException exception) {
+    ResponseEntity<ApiResponse<Void>> handlingValidation(MethodArgumentNotValidException exception) {
         String enumKey = exception.getFieldError().getDefaultMessage();
-        ErrorCode errorCode = ErrorCode.INVALID_KEY;
+        ErrorCode errorCode = ErrorCode.valueOf(enumKey);
 
-        errorCode = ErrorCode.valueOf(enumKey);
         var constraintViolation =
                 exception.getBindingResult().getAllErrors().get(0).unwrap(ConstraintViolation.class);
         var attributes = constraintViolation.getConstraintDescriptor().getAttributes();
 
         log.info(attributes.toString());
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .code(errorCode.getCode())
                 .message(mapAttributes(errorCode.getMessage(), attributes))
                 .build();
@@ -86,7 +85,7 @@ public class GlobalExceptionHandler {
     }
 
     public static String apiResponseToString(ErrorCode errorCode) throws JsonProcessingException {
-        ApiResponse apiResponse = ApiResponse.builder()
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();

@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 public class TenantContext {
     private static final ThreadLocal<String> CURRENT_TENANT = new ThreadLocal<>();
 
+    private TenantContext() {}
+
     public static String getCurrentTenant() {
         return CURRENT_TENANT.get() != null ? CURRENT_TENANT.get() : TenantId.DEFAULT_SCHEMA;
     }

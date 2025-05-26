@@ -2,6 +2,7 @@ package com.example.demo.config.tenancy;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.sql.DataSource;
 
 import org.hibernate.HibernateException;
@@ -15,13 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 public class TenantConnectionProviderImpl implements MultiTenantConnectionProvider<String> {
-    private final DataSource defaultDataSource;
+    private final transient DataSource defaultDataSource;
 
     @Override
     public Connection getConnection(String tenantId) throws SQLException {
         final Connection connection = getAnyConnection();
-        try {
-            connection.createStatement().execute("USE " + tenantId);
+        try (Statement statement = connection.createStatement(); ) {
+            statement.execute("USE " + tenantId);
         } catch (SQLException e) {
             throw new HibernateException("Could not switch to schema: " + tenantId, e);
         }

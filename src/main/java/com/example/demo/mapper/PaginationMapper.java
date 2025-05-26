@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import com.example.demo.dto.pagination.PaginationMeta;
 
 public class PaginationMapper {
+    private PaginationMapper() {}
+
     public static PaginationMeta toPaginationMeta(Page<?> page) {
         return PaginationMeta.builder()
                 .page(page.getNumber())

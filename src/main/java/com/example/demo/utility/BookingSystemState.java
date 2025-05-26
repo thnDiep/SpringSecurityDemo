@@ -17,7 +17,7 @@ public class BookingSystemState {
     @Getter
     volatile boolean bookingEnable = true;
 
-    AtomicInteger currentHoldBooking = new AtomicInteger(0);
+    final AtomicInteger currentHoldBooking = new AtomicInteger(0);
 
     public void setHoldBookingCounter(int value) {
         currentHoldBooking.set(value);

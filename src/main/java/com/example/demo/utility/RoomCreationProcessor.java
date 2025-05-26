@@ -32,8 +32,12 @@ public class RoomCreationProcessor implements Runnable {
             try {
                 Room room = queueManager.getQueue().take();
                 seatService.createSeatList(room);
+            } catch (InterruptedException e) {
+                log.warn("Thread was interrupted, shutting down...");
+                Thread.currentThread().interrupt();
+                break;
             } catch (Exception e) {
-                log.error("Failed to create seats: " + e.getMessage());
+                log.error("Failed to create seats: {}", e.getMessage(), e);
             }
         }
     }

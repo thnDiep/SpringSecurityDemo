@@ -1,12 +1,15 @@
 package com.example.demo.config.tenancy;
 
+import static org.hibernate.cfg.MultiTenancySettings.MULTI_TENANT_CONNECTION_PROVIDER;
+import static org.hibernate.cfg.MultiTenancySettings.MULTI_TENANT_IDENTIFIER_RESOLVER;
+import static org.hibernate.cfg.SchemaToolingSettings.HBM2DDL_AUTO;
+
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
 
 import jakarta.persistence.EntityManagerFactory;
 
-import org.hibernate.cfg.Environment;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -45,9 +48,9 @@ public class HibernateConfig {
             CurrentTenantIdentifierResolver<String> tenantIdentifierResolver) {
 
         Map<String, Object> hibernateProps = new HashMap<>();
-        hibernateProps.put(Environment.MULTI_TENANT_CONNECTION_PROVIDER, tenantConnectionProviderImpl);
-        hibernateProps.put(Environment.MULTI_TENANT_IDENTIFIER_RESOLVER, tenantIdentifierResolver);
-        hibernateProps.put(Environment.HBM2DDL_AUTO, "update");
+        hibernateProps.put(MULTI_TENANT_CONNECTION_PROVIDER, tenantConnectionProviderImpl);
+        hibernateProps.put(MULTI_TENANT_IDENTIFIER_RESOLVER, tenantIdentifierResolver);
+        hibernateProps.put(HBM2DDL_AUTO, "update");
 
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setPackagesToScan("com.example.demo.entity");
