@@ -1,7 +1,7 @@
 package com.example.demo.dto.response;
 
-import com.example.demo.constant.SeatStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

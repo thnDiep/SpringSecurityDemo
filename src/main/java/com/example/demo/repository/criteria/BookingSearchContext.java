@@ -1,16 +1,12 @@
 package com.example.demo.repository.criteria;
 
-import com.example.demo.constant.BookingStatus;
-import com.example.demo.dto.filter.BookingSearchFilter;
-import com.example.demo.dto.filter.UserSearchFilter;
-import com.example.demo.entity.*;
-import com.example.demo.exception.AppException;
-import com.example.demo.exception.ErrorCode;
-import jakarta.persistence.criteria.*;
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.criteria.*;
+
+import com.example.demo.dto.filter.BookingSearchFilter;
+import com.example.demo.entity.*;
 
 public class BookingSearchContext {
     private final CriteriaBuilder cb;

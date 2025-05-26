@@ -1,10 +1,11 @@
 package com.example.demo.config;
 
-import com.example.demo.filter.TenantFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+
+import com.example.demo.filter.TenantFilter;
 
 @Configuration
 public class FilterConfig {

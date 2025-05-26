@@ -1,5 +1,19 @@
 package com.example.demo.service;
 
+import java.util.HashSet;
+
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.example.demo.constant.PredefinedRole;
 import com.example.demo.dto.filter.UserSearchFilter;
 import com.example.demo.dto.pagination.PaginationResponse;
@@ -14,22 +28,10 @@ import com.example.demo.mapper.PaginationMapper;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -63,10 +65,12 @@ public class UserService {
         log.info("Fetch to the database");
         Pageable pageable = PageRequest.of(page, 2, Sort.by("id").ascending());
 
-        Page<UserResponse> userResponsePage = userRepository.searchUsers(filter, pageable).map(userMapper::toUserResponse);
+        Page<UserResponse> userResponsePage =
+                userRepository.searchUsers(filter, pageable).map(userMapper::toUserResponse);
         return PaginationResponse.<UserResponse>builder()
                 .pagination(PaginationMapper.toPaginationMeta(userResponsePage))
-                .data(userResponsePage.getContent()).build();
+                .data(userResponsePage.getContent())
+                .build();
     }
 
     //    @PreAuthorize("hasAuthority('APPROVE_POST')")
@@ -82,7 +86,8 @@ public class UserService {
 
     @PostAuthorize("returnObject.username == authentication.name or hasRole('ADMIN')")
     public UserResponse getUserById(Long userId) {
-        return userMapper.toUserResponse(userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+        return userMapper.toUserResponse(
+                userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
     @PostAuthorize("returnObject.username == authentication.name")

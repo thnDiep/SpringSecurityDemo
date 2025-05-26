@@ -1,9 +1,5 @@
 package com.example.demo.config.security;
 
-
-import com.example.demo.config.tenancy.TenantContext;
-import com.example.demo.constant.TenantId;
-import com.example.demo.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +7,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -21,11 +16,17 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
 
+import com.example.demo.config.tenancy.TenantContext;
+import com.example.demo.constant.TenantId;
+import com.example.demo.service.UserDetailsServiceImpl;
+
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[] JWT_PUBLIC_ENDPOINTS = {"/users", "/auth/token", "/auth/introspect"};
-    private final String[] UI_PUBLIC_ENDPOINTS = {"/admin-dashboard.html", "/chat.html", "/css/**", "/js/**", "/supports/**"};
+    private final String[] UI_PUBLIC_ENDPOINTS = {
+        "/admin-dashboard.html", "/chat.html", "/css/**", "/js/**", "/supports/**"
+    };
 
     CustomJwtDecoder customJwtDecoder;
 
@@ -38,12 +39,14 @@ public class SecurityConfig {
         httpSecurity
                 .securityMatcher(request -> TenantId.DIGEST_SCHEMA.equals(TenantContext.getCurrentTenant()))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers(UI_PUBLIC_ENDPOINTS).permitAll()              // WebSocket
-                        .requestMatchers("/auth/**").denyAll()
-                        .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, "/users")
+                        .permitAll()
+                        .requestMatchers(UI_PUBLIC_ENDPOINTS)
+                        .permitAll() // WebSocket
+                        .requestMatchers("/auth/**")
+                        .denyAll()
+                        .anyRequest()
+                        .authenticated())
                 .exceptionHandling(e -> e.authenticationEntryPoint(digestEntryPoint()))
                 .addFilterBefore(digestAuthenticationFilter(), BasicAuthenticationFilter.class);
         return httpSecurity.build();
@@ -54,19 +57,16 @@ public class SecurityConfig {
     SecurityFilterChain jwtChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers(HttpMethod.POST, JWT_PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers(UI_PUBLIC_ENDPOINTS).permitAll()
-                        .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, JWT_PUBLIC_ENDPOINTS)
+                        .permitAll()
+                        .requestMatchers(UI_PUBLIC_ENDPOINTS)
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
                 //  token -> (JwtDecoder) -> Jwt -> (JwtAuthenticationConverter) -> Authentication
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2
-                                .jwt(jwtConfigurer -> jwtConfigurer
-                                        .decoder(customJwtDecoder)
-                                        .jwtAuthenticationConverter(jwtConverter()))
-                                .authenticationEntryPoint(new JwtEntryPoint())
-                );
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer ->
+                                jwtConfigurer.decoder(customJwtDecoder).jwtAuthenticationConverter(jwtConverter()))
+                        .authenticationEntryPoint(new JwtEntryPoint()));
         return httpSecurity.build();
     }
 

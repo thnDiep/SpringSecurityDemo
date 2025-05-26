@@ -1,12 +1,13 @@
 package com.example.demo.config;
 
-import com.example.demo.config.tenancy.TenantContext;
+import java.sql.Connection;
+import java.sql.SQLException;
+import javax.sql.DataSource;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
+import com.example.demo.config.tenancy.TenantContext;
 
 @EnableConfigurationProperties
 public class DataSourceConfig extends AbstractDataSource {

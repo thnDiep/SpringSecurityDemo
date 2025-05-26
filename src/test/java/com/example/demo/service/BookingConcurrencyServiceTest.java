@@ -1,18 +1,13 @@
 package com.example.demo.service;
 
-import com.example.demo.config.tenancy.TenantContext;
-import com.example.demo.constant.TenantId;
-import com.example.demo.dto.request.BookingRequest;
-import com.example.demo.dto.response.BookingResponse;
-import com.example.demo.entity.User;
-import com.example.demo.repository.RoomRepository;
-import com.example.demo.repository.SeatRepository;
-import com.example.demo.repository.UserRepository;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
+import java.util.concurrent.*;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -21,23 +16,27 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
-import java.util.List;
-import java.util.concurrent.*;
-
-import static org.junit.jupiter.api.Assertions.*;
+import com.example.demo.config.tenancy.TenantContext;
+import com.example.demo.constant.TenantId;
+import com.example.demo.dto.request.BookingRequest;
+import com.example.demo.dto.response.BookingResponse;
+import com.example.demo.repository.RoomRepository;
+import com.example.demo.repository.SeatRepository;
+import com.example.demo.repository.UserRepository;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@TestPropertySource(properties = {
-        "JWT_SIGNER_KEY=testkey123"
-})
+@TestPropertySource(properties = {"JWT_SIGNER_KEY=testkey123"})
 public class BookingConcurrencyServiceTest {
     @Autowired
     private BookingService bookingService;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private SeatRepository seatRepository;
+
     @Autowired
     private RoomRepository roomRepository;
 
@@ -59,10 +58,10 @@ public class BookingConcurrencyServiceTest {
         Callable<Exception> task1 = () -> {
             latch.await();
             setAuth("default_user");
-            try{
+            try {
                 bookingResponse = bookingService.bookSeats(bookingRequest);
                 return null;
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("User 1: " + e);
                 return e;
             }
@@ -71,10 +70,10 @@ public class BookingConcurrencyServiceTest {
         Callable<Exception> task2 = () -> {
             latch.await();
             setAuth("default_user1");
-            try{
+            try {
                 bookingResponse = bookingService.bookSeats(bookingRequest);
                 return null;
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("User 2: " + e);
                 return e;
             }
@@ -88,16 +87,14 @@ public class BookingConcurrencyServiceTest {
         executor.shutdown();
 
         // kiểm tra có đúng 1 thread bị lỗi OptimisticLock
-        boolean oneFailsWithOptimisticLock =
-                (e1 instanceof ObjectOptimisticLockingFailureException && e2 == null) ||
-                        (e2 instanceof ObjectOptimisticLockingFailureException && e1 == null);
+        boolean oneFailsWithOptimisticLock = (e1 instanceof ObjectOptimisticLockingFailureException && e2 == null)
+                || (e2 instanceof ObjectOptimisticLockingFailureException && e1 == null);
         assertTrue(oneFailsWithOptimisticLock, "Exactly one call should fail with OptimisticLocking");
     }
 
     private void setAuth(String username) {
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(username, null, null)
-        );
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken(username, null, null));
     }
 
     @AfterEach

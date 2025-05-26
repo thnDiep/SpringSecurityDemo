@@ -1,12 +1,12 @@
 package com.example.demo.entity;
 
+import java.time.LocalDate;
+import java.util.Set;
+
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
 
 @Setter
 @Getter
@@ -20,6 +20,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
     String username;
     String password;
     String firstName;
@@ -27,6 +28,7 @@ public class User {
 
     @ManyToMany
     Set<Role> roles;
+
     LocalDate dob;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

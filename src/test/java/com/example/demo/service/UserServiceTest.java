@@ -1,15 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.constant.PredefinedRole;
-import com.example.demo.dto.request.UserCreationRequest;
-import com.example.demo.dto.response.UserResponse;
-import com.example.demo.entity.Role;
-import com.example.demo.entity.User;
-import com.example.demo.exception.AppException;
-import com.example.demo.exception.ErrorCode;
-import com.example.demo.mapper.UserMapper;
-import com.example.demo.repository.RoleRepository;
-import com.example.demo.repository.UserRepository;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,17 +19,20 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
-import java.time.LocalDate;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import com.example.demo.constant.PredefinedRole;
+import com.example.demo.dto.request.UserCreationRequest;
+import com.example.demo.dto.response.UserResponse;
+import com.example.demo.entity.Role;
+import com.example.demo.entity.User;
+import com.example.demo.exception.AppException;
+import com.example.demo.exception.ErrorCode;
+import com.example.demo.mapper.UserMapper;
+import com.example.demo.repository.RoleRepository;
+import com.example.demo.repository.UserRepository;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@TestPropertySource(properties = {
-        "JWT_SIGNER_KEY=testkey123"
-})
+@TestPropertySource(properties = {"JWT_SIGNER_KEY=testkey123"})
 public class UserServiceTest {
 
     @InjectMocks
@@ -41,10 +40,13 @@ public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
     @Mock
     private RoleRepository roleRepository;
+
     @Mock
     private UserMapper userMapper;
+
     @Mock
     private PasswordEncoder passwordEncoder;
 

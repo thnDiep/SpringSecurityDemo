@@ -1,13 +1,15 @@
 package com.example.demo.config.batch;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.batch.item.ItemProcessor;
+
 import com.example.demo.dto.UserDto;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.item.ItemProcessor;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class UserItemProcessor implements ItemProcessor<User, UserDto> {

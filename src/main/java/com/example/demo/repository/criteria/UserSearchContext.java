@@ -1,12 +1,13 @@
 package com.example.demo.repository.criteria;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.criteria.*;
+
 import com.example.demo.dto.filter.UserSearchFilter;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
-import jakarta.persistence.criteria.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserSearchContext {
     private final CriteriaBuilder cb;
@@ -24,13 +25,10 @@ public class UserSearchContext {
 
         if (filter.getKeyword() != null && !filter.getKeyword().isEmpty()) {
             String pattern = "%" + filter.getKeyword().toLowerCase() + "%";
-            predicates.add(
-                    cb.or(
-                            cb.like(cb.lower(root.get("username")), pattern),
-                            cb.like(cb.lower(root.get("firstName")), pattern),
-                            cb.like(cb.lower(root.get("lastName")), pattern)
-                    )
-            );
+            predicates.add(cb.or(
+                    cb.like(cb.lower(root.get("username")), pattern),
+                    cb.like(cb.lower(root.get("firstName")), pattern),
+                    cb.like(cb.lower(root.get("lastName")), pattern)));
         }
 
         if (filter.getFromDob() != null) {

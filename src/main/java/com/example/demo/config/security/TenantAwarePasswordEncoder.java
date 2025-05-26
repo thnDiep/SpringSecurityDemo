@@ -1,10 +1,11 @@
 package com.example.demo.config.security;
 
-import com.example.demo.config.tenancy.TenantContext;
-import com.example.demo.constant.TenantId;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.example.demo.config.tenancy.TenantContext;
+import com.example.demo.constant.TenantId;
 
 public class TenantAwarePasswordEncoder implements PasswordEncoder {
     @Override

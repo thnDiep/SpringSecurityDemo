@@ -1,11 +1,12 @@
 package com.example.demo.dto.request;
 
-import jakarta.validation.constraints.Size;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.util.Set;
+
+import jakarta.validation.constraints.Size;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
@@ -15,6 +16,7 @@ import java.util.Set;
 public class UserUpdateRequest {
     @Size(min = 8, message = "INVALID_PASSWORD")
     String password;
+
     String firstName;
     String lastName;
     LocalDate dob;

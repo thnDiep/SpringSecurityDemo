@@ -1,13 +1,16 @@
 package com.example.demo.utility;
 
+import jakarta.annotation.PostConstruct;
+
+import org.springframework.stereotype.Component;
+
 import com.example.demo.entity.Room;
 import com.example.demo.service.SeatService;
-import jakarta.annotation.PostConstruct;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class RoomCreationProcessor implements Runnable {
 
     @Override
     public void run() {
-        while(true) {
+        while (true) {
             try {
                 Room room = queueManager.getQueue().take();
                 seatService.createSeatList(room);

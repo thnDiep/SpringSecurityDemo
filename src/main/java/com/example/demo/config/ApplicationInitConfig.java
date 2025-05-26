@@ -1,20 +1,14 @@
 package com.example.demo.config;
 
-import com.example.demo.config.tenancy.TenantContext;
-import com.example.demo.constant.PredefinedRole;
-import com.example.demo.constant.TenantId;
-import com.example.demo.entity.Role;
-import com.example.demo.entity.User;
-import com.example.demo.exception.AppException;
-import com.example.demo.exception.ErrorCode;
-import com.example.demo.repository.RoleRepository;
-import com.example.demo.repository.UserRepository;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.List;
+import javax.sql.DataSource;
+
 import jakarta.annotation.PostConstruct;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -24,12 +18,21 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.List;
+import com.example.demo.config.tenancy.TenantContext;
+import com.example.demo.constant.PredefinedRole;
+import com.example.demo.constant.TenantId;
+import com.example.demo.entity.Role;
+import com.example.demo.entity.User;
+import com.example.demo.exception.AppException;
+import com.example.demo.exception.ErrorCode;
+import com.example.demo.repository.RoleRepository;
+import com.example.demo.repository.UserRepository;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -55,13 +58,13 @@ public class ApplicationInitConfig {
     @Profile("!test")
     ApplicationRunner applicationRunner() {
         return args -> {
-            for(String tenantId : tenantList) {
+            for (String tenantId : tenantList) {
                 TenantContext.setCurrentTenant(tenantId);
-                if(!isBatchSchemaInitialized(tenantId)) {
+                if (!isBatchSchemaInitialized(tenantId)) {
                     initializeBatchSchema();
                     log.info("Batch schema is initialized for " + tenantId);
                 }
-                if(!isDefaultSchemaInitialized(tenantId)) {
+                if (!isDefaultSchemaInitialized(tenantId)) {
                     initializeDefaultSchema();
                     log.info("Default schema is initialized for " + tenantId);
                 }
@@ -71,9 +74,8 @@ public class ApplicationInitConfig {
     }
 
     private void initializeBatchSchema() {
-        ResourceDatabasePopulator popular = new ResourceDatabasePopulator(
-                new ClassPathResource("org/springframework/batch/core/schema-mysql.sql")
-        );
+        ResourceDatabasePopulator popular =
+                new ResourceDatabasePopulator(new ClassPathResource("org/springframework/batch/core/schema-mysql.sql"));
         popular.setContinueOnError(false);
         popular.execute(dataSource);
     }
@@ -89,9 +91,7 @@ public class ApplicationInitConfig {
     }
 
     private void initializeDefaultSchema() {
-        ResourceDatabasePopulator popular = new ResourceDatabasePopulator(
-                new ClassPathResource("schema.sql")
-        );
+        ResourceDatabasePopulator popular = new ResourceDatabasePopulator(new ClassPathResource("schema.sql"));
         popular.setContinueOnError(false);
         popular.execute(dataSource);
     }
@@ -107,7 +107,7 @@ public class ApplicationInitConfig {
     }
 
     private void initAdminAccount() {
-        if(userRepository.findByUsername("admin").isEmpty()) {
+        if (userRepository.findByUsername("admin").isEmpty()) {
             Role adminRole = roleRepository.save(Role.builder()
                     .name(PredefinedRole.ADMIN_ROLE)
                     .description("Admin role")

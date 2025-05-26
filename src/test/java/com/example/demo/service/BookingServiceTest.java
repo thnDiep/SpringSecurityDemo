@@ -1,16 +1,13 @@
 package com.example.demo.service;
 
-import com.example.demo.constant.BookingStatus;
-import com.example.demo.dto.request.BookingRequest;
-import com.example.demo.dto.response.BookingResponse;
-import com.example.demo.entity.Seat;
-import com.example.demo.entity.User;
-import com.example.demo.exception.AppException;
-import com.example.demo.exception.ErrorCode;
-import com.example.demo.mapper.BookingMapper;
-import com.example.demo.repository.BookingRepository;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.utility.BookingSystemState;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,19 +19,21 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import com.example.demo.constant.BookingStatus;
+import com.example.demo.dto.request.BookingRequest;
+import com.example.demo.dto.response.BookingResponse;
+import com.example.demo.entity.Seat;
+import com.example.demo.entity.User;
+import com.example.demo.exception.AppException;
+import com.example.demo.exception.ErrorCode;
+import com.example.demo.mapper.BookingMapper;
+import com.example.demo.repository.BookingRepository;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.utility.BookingSystemState;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@TestPropertySource(properties = {
-        "JWT_SIGNER_KEY=testkey123"
-})
+@TestPropertySource(properties = {"JWT_SIGNER_KEY=testkey123"})
 public class BookingServiceTest {
     @InjectMocks
     private BookingService bookingService;

@@ -1,11 +1,13 @@
 package com.example.demo.utility;
 
-import com.example.demo.entity.Room;
-import lombok.Getter;
-import org.springframework.stereotype.Component;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.springframework.stereotype.Component;
+
+import com.example.demo.entity.Room;
+
+import lombok.Getter;
 
 @Getter
 @Component

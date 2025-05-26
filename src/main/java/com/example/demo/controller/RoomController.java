@@ -1,16 +1,17 @@
 package com.example.demo.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.demo.dto.request.RoomRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.RoomResponse;
-import com.example.demo.entity.Room;
 import com.example.demo.service.RoomService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)

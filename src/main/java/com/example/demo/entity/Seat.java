@@ -1,10 +1,11 @@
 package com.example.demo.entity;
 
-import com.example.demo.constant.SeatStatus;
 import jakarta.persistence.*;
+
+import com.example.demo.constant.SeatStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
 
 @Getter
 @Setter

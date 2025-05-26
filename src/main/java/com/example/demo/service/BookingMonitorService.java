@@ -1,18 +1,20 @@
 package com.example.demo.service;
 
-import com.example.demo.config.websocket.AdminDashboardHandler;
-import com.example.demo.utility.BookingSystemState;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.io.IOException;
+import com.example.demo.config.websocket.AdminDashboardHandler;
+import com.example.demo.utility.BookingSystemState;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -24,6 +26,7 @@ public class BookingMonitorService {
 
     @NonFinal
     private boolean lastEnable = true;
+
     @NonFinal
     private int lastHold = 0;
 

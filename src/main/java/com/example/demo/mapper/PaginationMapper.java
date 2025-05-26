@@ -1,7 +1,8 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dto.pagination.PaginationMeta;
 import org.springframework.data.domain.Page;
+
+import com.example.demo.dto.pagination.PaginationMeta;
 
 public class PaginationMapper {
     public static PaginationMeta toPaginationMeta(Page<?> page) {

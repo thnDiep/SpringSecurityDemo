@@ -1,16 +1,18 @@
 package com.example.demo.repository;
 
-import com.example.demo.repository.criteria.UserSearchContext;
-import com.example.demo.dto.filter.UserSearchFilter;
-import com.example.demo.entity.User;
+import java.util.List;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import com.example.demo.dto.filter.UserSearchFilter;
+import com.example.demo.entity.User;
+import com.example.demo.repository.criteria.UserSearchContext;
 
 public class UserRepositoryImpl implements UserRepositoryCustom {
     @PersistenceContext
@@ -25,7 +27,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
         List<Predicate> predicates = ctx.buildPredicates(filter);
         query.select(user).distinct(true).where(cb.and(predicates.toArray(new Predicate[0])));
-        List<User> users = entityManager.createQuery(query)
+        List<User> users = entityManager
+                .createQuery(query)
                 .setFirstResult((int) pageable.getOffset())
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();

@@ -1,19 +1,17 @@
 package com.example.demo.utility;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 @SpringBootTest
 @ActiveProfiles("test")
-@TestPropertySource(properties = {
-        "JWT_SIGNER_KEY=testkey123"
-})
+@TestPropertySource(properties = {"JWT_SIGNER_KEY=testkey123"})
 public class BookingSystemStateTest {
     @InjectMocks
     BookingSystemState bookingSystemState;
@@ -28,9 +26,8 @@ public class BookingSystemStateTest {
 
         Thread t1 = new Thread(() -> {
             System.out.println("START VOLATILE - " + bookingSystemState.isBookingEnable());
-            while (bookingSystemState.isBookingEnable()) {
+            while (bookingSystemState.isBookingEnable()) {}
 
-            }
             System.out.println("END VOLATILE - " + bookingSystemState.isBookingEnable());
             assertFalse(bookingSystemState.isBookingEnable());
         });
@@ -38,9 +35,8 @@ public class BookingSystemStateTest {
 
         Thread t2 = new Thread(() -> {
             System.out.println("START INVALID - " + BookingSystemStateTest.invalidFlag);
-            while (BookingSystemStateTest.invalidFlag) {
+            while (BookingSystemStateTest.invalidFlag) {}
 
-            }
             System.out.println("END INVALID = " + BookingSystemStateTest.invalidFlag);
         });
         t2.start();

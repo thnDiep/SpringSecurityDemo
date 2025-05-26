@@ -1,7 +1,11 @@
 package com.example.demo.config.tenancy;
 
-import com.example.demo.config.DataSourceConfig;
+import java.util.HashMap;
+import java.util.Map;
+import javax.sql.DataSource;
+
 import jakarta.persistence.EntityManagerFactory;
+
 import org.hibernate.cfg.Environment;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
@@ -16,20 +20,18 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
+import com.example.demo.config.DataSourceConfig;
 
 @Configuration
-public class HibernateConfig  {
-    @Bean(name="baseDataSource")
+public class HibernateConfig {
+    @Bean(name = "baseDataSource")
     @ConfigurationProperties("spring.datasource")
     @Profile("!test")
     public DataSource baseDataSource() {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean(name="tenantDataSource")
+    @Bean(name = "tenantDataSource")
     @Primary
     @Profile("!test")
     public DataSource dataSource() {

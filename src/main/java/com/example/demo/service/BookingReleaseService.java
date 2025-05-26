@@ -1,18 +1,19 @@
 package com.example.demo.service;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.demo.constant.BookingStatus;
 import com.example.demo.constant.SeatStatus;
 import com.example.demo.entity.Booking;
 import com.example.demo.repository.BookingRepository;
 import com.example.demo.repository.SeatRepository;
 import com.example.demo.utility.BookingSystemState;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 
 @Slf4j
 @RequiredArgsConstructor

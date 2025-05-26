@@ -1,13 +1,14 @@
 package com.example.demo.entity;
 
-import com.example.demo.constant.BookingStatus;
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import jakarta.persistence.*;
+
+import com.example.demo.constant.BookingStatus;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -30,5 +31,6 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     BookingStatus status;
+
     LocalDateTime bookingTime;
 }
