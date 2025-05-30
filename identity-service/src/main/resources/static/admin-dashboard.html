@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Booking Dashboard</title>
+</head>
+<body>
+<h2>Admin Dashboard (Real-time Booking Status)</h2>
+
+<p>Booking System: <span id="status"></span></p>
+<p>Current Hold Count: <span id="holdCount"></span></p>
+
+<script>
+    const socket = new WebSocket("ws://localhost:8080/admin-dashboard");
+
+    socket.onopen = () => console.log("WebSocket connected!");
+
+    socket.onclose = () => console.log("WebSocket disconnected!");
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        document.getElementById("status").innerText = data.bookingEnable ? "ENABLED" : "DISABLED";
+        document.getElementById("holdCount").innerText = data.currentHold;
+    };
+</script>
+</body>
+</html>

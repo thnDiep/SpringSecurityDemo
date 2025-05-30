@@ -1,0 +1,27 @@
+package com.bookditi.identity.config.security;
+
+import java.io.IOException;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.http.MediaType;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+
+import com.bookditi.identity.exception.ErrorCode;
+import com.bookditi.identity.exception.GlobalExceptionHandler;
+
+public class JwtEntryPoint implements AuthenticationEntryPoint {
+    @Override
+    public void commence(
+            HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
+            throws IOException, ServletException {
+        ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
+
+        response.setStatus(errorCode.getStatusCode().value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.getWriter().write(GlobalExceptionHandler.apiResponseToString(errorCode)); // set body cho response
+    }
+}
